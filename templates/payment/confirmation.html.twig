@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+{% block title %}Réservation Confirmée #{{ reservation.id }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+.confirmation-hero { text-align:center; padding:3rem 2rem 2rem; }
+.confirmation-hero .check-circle { width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#1cc88a,#17a673);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.5rem;box-shadow:0 8px 25px rgba(28,200,138,.35); }
+.confirmation-hero .check-circle i { font-size:2.5rem;color:#fff; }
+.detail-row { display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid #f1f3f9; }
+.detail-row:last-child { border-bottom:none; }
+.detail-label { color:#858796;font-size:.85rem; }
+.detail-value { font-weight:600;color:#2e3338; }
+.ref-badge { background:linear-gradient(135deg,#2a33a3,#1a237e);color:#fff;padding:.6rem 1.5rem;border-radius:50px;font-size:1.1rem;font-weight:700;letter-spacing:1px; }
+.stepper-done .step-circle { background:#1cc88a!important;border-color:#1cc88a!important;color:#fff!important; }
+.payment-stepper{display:flex;align-items:center;justify-content:center;margin-bottom:2rem;gap:0;}
+.step{display:flex;flex-direction:column;align-items:center;position:relative;}
+.step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;border:3px solid #dee2e6;background:#fff;color:#6c757d;}
+.step.done .step-circle{background:#1cc88a;border-color:#1cc88a;color:#fff;}
+.step-label{font-size:.7rem;font-weight:600;margin-top:4px;color:#6c757d;white-space:nowrap;}
+.step.done .step-label{color:#1cc88a;}
+.step-connector{flex:1;height:3px;background:#dee2e6;min-width:40px;max-width:80px;margin-bottom:18px;}
+.step-connector.done{background:#1cc88a;}
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Stepper – all done -->
+<div class="payment-stepper mb-2">
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Voiture</div></div>
+    <div class="step-connector done"></div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Réservation</div></div>
+    <div class="step-connector done"></div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Paiement</div></div>
+    <div class="step-connector done"></div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Confirmation</div></div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="confirmation-hero">
+                    <div class="check-circle"><i class="fas fa-check"></i></div>
+                    <h2 class="font-weight-bold text-gray-800 mb-2">Réservation confirmée !</h2>
+                    <p class="text-muted mb-3">Votre paiement a été traité et votre réservation est validée.</p>
+                    <div class="ref-badge mb-3">Réf. #{{ '%05d'|format(reservation.id) }}</div>
+                    <p class="text-muted small">
+                        <i class="fas fa-envelope mr-1 text-success"></i>
+                        Un email de confirmation a été envoyé à <strong>{{ app.user.email }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3" style="background:linear-gradient(135deg,#2a33a3,#1a237e);">
+                <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-clipboard-list mr-2"></i>Détails de la réservation</h6>
+            </div>
+            <div class="card-body p-4">
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-car mr-2 text-primary"></i>Véhicule</span>
+                    <span class="detail-value">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-user mr-2 text-success"></i>Client</span>
+                    <span class="detail-value">{{ reservation.client.nom }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar-day mr-2 text-success"></i>Date de début</span>
+                    <span class="detail-value">{{ reservation.dateDebut|date('d/m/Y') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar-day mr-2 text-danger"></i>Date de fin</span>
+                    <span class="detail-value">{{ reservation.dateFin|date('d/m/Y') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-sun mr-2 text-warning"></i>Durée</span>
+                    <span class="detail-value">
+                        {% set days = (reservation.dateFin.timestamp - reservation.dateDebut.timestamp) / 86400 + 1 %}
+                        {{ days|round(0,'ceil') }} jour(s)
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-tag mr-2 text-info"></i>Prix/jour</span>
+                    <span class="detail-value">{{ reservation.voiture.prixParJour }} DT</span>
+                </div>
+                <div class="detail-row" style="background:#f8f9fc;border-radius:6px;padding:.75rem .5rem;">
+                    <span class="detail-label font-weight-bold" style="font-size:1rem;"><i class="fas fa-money-bill-wave mr-2 text-success"></i>Total payé</span>
+                    <span class="detail-value" style="font-size:1.3rem;color:#2a33a3;">{{ reservation.prixTotal|number_format(2, ',', ' ') }} DT</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home mr-1"></i>Retour à l'accueil
+            </a>
+            <a href="{{ path('app_profile') }}" class="btn btn-primary" style="background:#2a33a3;border-color:#2a33a3;">
+                <i class="fas fa-list mr-1"></i>Mes réservations
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

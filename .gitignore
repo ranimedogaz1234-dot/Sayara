@@ -1,0 +1,47 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/*/*.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+# Local databases, dumps, keys and credentials
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.pem
+*.key
+*.p12
+*.crt
+/config/jwt/
+
+# User-uploaded files (keep the folder only)
+/public/uploads/voitures/*
+!/public/uploads/voitures/.gitkeep
+
+# Editors / OS / tooling
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+
+# Environment configuration
+/.env
+/.env.dev
+/.env.test

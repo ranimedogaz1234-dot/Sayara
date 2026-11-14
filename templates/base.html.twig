@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}CarRent{% endblock %} — CarRent Admin</title>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        /* CarRent theme override — primary: #2a33a3 */
+        :root { --primary: #2a33a3; }
+        .bg-gradient-carrent { background: linear-gradient(180deg, #2a33a3 10%, #1a237e 100%) !important; }
+        .sidebar .nav-item .nav-link { color: rgba(255,255,255,.8); }
+        .sidebar .nav-item .nav-link:active, .sidebar .nav-item .nav-link:focus, .sidebar .nav-item .nav-link:hover, .sidebar .nav-item.active .nav-link { color: #fff; }
+        .sidebar-brand-text { color: #fff !important; }
+        .btn-primary, a.btn-primary { background-color: #2a33a3 !important; border-color: #2a33a3 !important; }
+        .btn-primary:hover, a.btn-primary:hover { background-color: #1a237e !important; border-color: #1a237e !important; }
+        .btn-outline-primary { color: #2a33a3 !important; border-color: #2a33a3 !important; }
+        .btn-outline-primary:hover { background-color: #2a33a3 !important; border-color: #2a33a3 !important; color: #fff !important; }
+        .text-primary { color: #2a33a3 !important; }
+        .border-left-primary { border-left: 0.25rem solid #2a33a3 !important; }
+        a { color: #2a33a3; }
+        .dropdown-item:active { background-color: #2a33a3; }
+        .collapse-item:hover { color: #2a33a3; }
+        .modal .btn-primary { background-color: #2a33a3 !important; border-color: #1a237e !important; }
+        .topbar .nav-item .nav-link { color: #2a33a3; }
+        .scroll-to-top { background-color: #2a33a3 !important; }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+    <!-- SIDEBAR (ADMIN ONLY) -->
+    {% if is_granted('ROLE_ADMIN') %}
+    <ul class="navbar-nav bg-gradient-carrent sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-car"></i></div>
+            <div class="sidebar-brand-text mx-3">CarRent</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('app_dashboard') }}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Tableau de Bord</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Gestion</div>
+
+        <!-- Gestion Voitures -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#collapseVoitures" data-toggle="collapse"
+               data-target="#collapseVoitures" aria-expanded="false" aria-controls="collapseVoitures">
+                <i class="fas fa-fw fa-car"></i>
+                <span>Gestion Voitures</span>
+            </a>
+            <div id="collapseVoitures" class="collapse" aria-labelledby="headingVoitures" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Voitures :</h6>
+                    <a class="collapse-item" href="{{ path('app_voiture_new') }}">
+                        <i class="fas fa-plus-circle text-primary mr-1"></i> Ajouter Voiture
+                    </a>
+                    <a class="collapse-item" href="{{ path('app_voiture_index') }}">
+                        <i class="fas fa-list text-primary mr-1"></i> Liste des Voitures
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <!-- Gestion Clients -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#collapseClients" data-toggle="collapse"
+               data-target="#collapseClients" aria-expanded="false" aria-controls="collapseClients">
+                <i class="fas fa-fw fa-users"></i>
+                <span>Gestion Clients</span>
+            </a>
+            <div id="collapseClients" class="collapse" aria-labelledby="headingClients" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Clients :</h6>
+                    <a class="collapse-item" href="{{ path('app_user_new') }}">
+                        <i class="fas fa-user-plus text-success mr-1"></i> Ajouter Client
+                    </a>
+                    <a class="collapse-item" href="{{ path('app_user_index') }}">
+                        <i class="fas fa-list text-success mr-1"></i> Liste des Clients
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <!-- Gestion Réservations -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#collapseReservations" data-toggle="collapse"
+               data-target="#collapseReservations" aria-expanded="false" aria-controls="collapseReservations">
+                <i class="fas fa-fw fa-calendar-alt"></i>
+                <span>Gestion Réservations</span>
+            </a>
+            <div id="collapseReservations" class="collapse" aria-labelledby="headingReservations" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Réservations :</h6>
+                    <a class="collapse-item" href="{{ path('app_reservation_new') }}">
+                        <i class="fas fa-plus-circle text-warning mr-1"></i> Ajouter Réservation
+                    </a>
+                    <a class="collapse-item" href="{{ path('app_reservation_index') }}">
+                        <i class="fas fa-list text-warning mr-1"></i> Liste des Réservations
+                    </a>
+                </div>
+            </div>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </ul>
+    {% endif %}
+    <!-- End Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+
+            <!-- TOPBAR -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <ul class="navbar-nav ml-auto">
+                    <div class="topbar-divider d-none d-sm-block"></div>
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                {% if app.user %}
+                                    {{ app.user.nom }}
+                                {% else %}
+                                    Utilisateur
+                                {% endif %}
+                            </span>
+                            <img class="img-profile rounded-circle" width="32" height="32"
+                                 src="https://ui-avatars.com/api/?name={% if app.user %}{{ app.user.nom }}{% else %}User{% endif %}&background=4e73df&color=fff">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{{ path('app_profile') }}">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Mon Compte
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Déconnexion
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <!-- End Topbar -->
+
+            <!-- Page Content -->
+            <div class="container-fluid">
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="fas fa-check-circle mr-2"></i> {{ message }}
+                        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="fas fa-exclamation-circle mr-2"></i> {{ message }}
+                        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                    </div>
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>CarRent &copy; {{ "now"|date("Y") }} — Gestion de Location de Voitures</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la déconnexion</h5>
+                <button class="close" type="button" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">Voulez-vous vraiment vous déconnecter de CarRent ?</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                <a class="btn btn-primary" href="{{ logout_path() }}">Déconnexion</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/js/sb-admin-2.min.js"></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

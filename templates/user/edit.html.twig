@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier — {{ user.nom }}{% endblock %}
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-user-edit text-warning mr-2"></i>Modifier le Client</h1>
+    <a href="{{ path('app_user_index') }}" class="btn btn-secondary shadow-sm"><i class="fas fa-arrow-left fa-sm mr-1"></i>Retour</a>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-warning text-dark"><h6 class="m-0 font-weight-bold"><i class="fas fa-user mr-2"></i>{{ user.nom }}</h6></div>
+            <div class="card-body p-4">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700"><i class="fas fa-user mr-1 text-warning"></i> Nom Complet</label>
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700"><i class="fas fa-envelope mr-1 text-warning"></i> Email</label>
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700"><i class="fas fa-lock mr-1 text-warning"></i> Mot de passe</label>
+                    {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Laisser vide pour ne pas changer'}}) }}
+                    {{ form_errors(form.password) }}
+                </div>
+                <hr class="my-4">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary"><i class="fas fa-times mr-1"></i>Annuler</a>
+                    <button type="submit" class="btn btn-warning px-4"><i class="fas fa-save mr-1"></i>Enregistrer</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

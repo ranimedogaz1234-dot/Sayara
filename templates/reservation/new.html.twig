@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouvelle Réservation{% endblock %}
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-calendar-plus text-warning mr-2"></i>Effectuer une Réservation</h1>
+    <a href="{{ path('app_home') }}" class="btn btn-secondary shadow-sm"><i class="fas fa-arrow-left fa-sm mr-1"></i>Retour</a>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-warning text-dark"><h6 class="m-0 font-weight-bold"><i class="fas fa-calendar mr-2"></i>Informations de la Réservation</h6></div>
+            <div class="card-body p-4">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'reservationForm'}}) }}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700"><i class="fas fa-user mr-1 text-success"></i> Sélectionner un Client</label>
+                    {{ form_widget(form.client, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.client) }}
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700"><i class="fas fa-car mr-1 text-primary"></i> Sélectionner une Voiture</label>
+                    {{ form_widget(form.voiture, {'attr': {'class': 'form-control', 'id': 'voitureSelect'}}) }}
+                    {{ form_errors(form.voiture) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700"><i class="fas fa-calendar-day mr-1 text-success"></i> Date de Début</label>
+                            {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control', 'type': 'date', 'id': 'dateDebut'}}) }}
+                            {{ form_errors(form.dateDebut) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700"><i class="fas fa-calendar-day mr-1 text-danger"></i> Date de Fin</label>
+                            {{ form_widget(form.dateFin, {'attr': {'class': 'form-control', 'type': 'date', 'id': 'dateFin'}}) }}
+                            {{ form_errors(form.dateFin) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price preview -->
+                <div id="pricePreview" class="alert alert-success d-none">
+                    <i class="fas fa-calculator mr-2"></i>
+                    <strong>Prix estimé : <span id="estimatedPrice">0</span> DT</strong>
+                    <small class="d-block text-muted mt-1">(<span id="numDays">0</span> jours × <span id="pricePerDay">0</span> DT/jour)</small>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Le prix total sera calculé automatiquement en fonction des dates et du prix journalier de la voiture.
+                </div>
+
+                <hr class="my-4">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_home') }}" class="btn btn-secondary"><i class="fas fa-times mr-1"></i>Annuler</a>
+                    <button type="submit" class="btn btn-warning px-4"><i class="fas fa-save mr-1"></i>Créer la Réservation</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Price data from voiture options - extract price from label
+const voiturePrices = {};
+document.querySelectorAll('#voitureSelect option').forEach(opt => {
+    if (opt.value) {
+        const match = opt.text.match(/\((\d+(?:\.\d+)?) DT\/jour\)/);
+        if (match) voiturePrices[opt.value] = parseFloat(match[1]);
+    }
+});
+
+function updatePrice() {
+    const voitureId = document.getElementById('voitureSelect')?.value;
+    const dateDebut = document.getElementById('dateDebut')?.value;
+    const dateFin = document.getElementById('dateFin')?.value;
+    const preview = document.getElementById('pricePreview');
+
+    if (voitureId && dateDebut && dateFin && voiturePrices[voitureId]) {
+        const d1 = new Date(dateDebut), d2 = new Date(dateFin);
+        const days = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+        if (days >= 1) {
+            const price = days * voiturePrices[voitureId];
+            document.getElementById('numDays').textContent = days;
+            document.getElementById('pricePerDay').textContent = voiturePrices[voitureId];
+            document.getElementById('estimatedPrice').textContent = price.toFixed(2);
+            preview.classList.remove('d-none');
+            return;
+        }
+    }
+    preview.classList.add('d-none');
+}
+
+['voitureSelect', 'dateDebut', 'dateFin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', updatePrice);
+});
+</script>
+{% endblock %}

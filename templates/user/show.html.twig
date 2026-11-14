@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block title %}Client — {{ user.nom }}{% endblock %}
+{% block body %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-user text-info mr-2"></i>Détails du Client</h1>
+    <div>
+        <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning mr-2"><i class="fas fa-edit mr-1"></i>Modifier</a>
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left mr-1"></i>Retour</a>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-info text-white">
+                <h5 class="m-0 font-weight-bold"><i class="fas fa-user mr-2"></i>{{ user.nom }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <table class="table table-borderless">
+                    <tr><th class="text-gray-600"><i class="fas fa-hashtag mr-2 text-primary"></i>ID</th><td><strong>#{{ user.id }}</strong></td></tr>
+                    <tr><th class="text-gray-600"><i class="fas fa-user mr-2 text-success"></i>Nom</th><td>{{ user.nom }}</td></tr>
+                    <tr><th class="text-gray-600"><i class="fas fa-envelope mr-2 text-info"></i>Email</th><td>{{ user.email }}</td></tr>
+                    <tr><th class="text-gray-600"><i class="fas fa-shield-alt mr-2 text-warning"></i>Rôle</th><td><span class="badge badge-secondary px-2 py-1">{{ user.role }}</span></td></tr>
+                </table>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left mr-1"></i>Retour</a>
+                    <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-warning"><i class="fas fa-edit mr-1"></i>Modifier</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

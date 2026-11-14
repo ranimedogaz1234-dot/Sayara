@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Voitures{% endblock %}
+
+{% block body %}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-car text-primary mr-2"></i>Liste des Voitures
+    </h1>
+    <a href="{{ path('app_voiture_new') }}" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus-circle fa-sm mr-1"></i> Ajouter une Voiture
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-table mr-2"></i>Parc Automobile
+            <span class="badge badge-primary ml-2">{{ voitures|length }}</span>
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if voitures|length == 0 %}
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-car fa-4x mb-3 opacity-50"></i>
+                <p class="h5">Aucune voiture enregistrée.</p>
+                <a href="{{ path('app_voiture_new') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus mr-1"></i>Ajouter la première voiture
+                </a>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th width="60">#</th>
+                        <th width="100">Image</th>
+                        <th>Marque</th>
+                        <th>Modèle</th>
+                        <th>Prix / Jour</th>
+                        <th>Disponibilité</th>
+                        <th width="220" class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for voiture in voitures %}
+                        <tr>
+                            <td class="text-center font-weight-bold text-primary">{{ voiture.id }}</td>
+                            <td class="text-center">
+                                {% if voiture.image %}
+                                    <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }}" style="max-height: 50px; border-radius: 0.25rem;">
+                                {% else %}
+                                    <span class="text-muted small"><i class="fas fa-image"></i> Pas d'image</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fas fa-car text-muted mr-1"></i>
+                                <strong>{{ voiture.marque }}</strong>
+                            </td>
+                            <td>{{ voiture.modele }}</td>
+                            <td>
+                                <span class="badge badge-info px-3 py-2">
+                                    {{ voiture.prixParJour }} DT
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if voiture.disponible %}
+                                    <span class="badge badge-success px-3 py-2">
+                                        <i class="fas fa-check-circle mr-1"></i>Disponible
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-danger px-3 py-2">
+                                        <i class="fas fa-times-circle mr-1"></i>Indisponible
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <!-- Consulter -->
+                                <a href="{{ path('app_voiture_show', {id: voiture.id}) }}"
+                                   class="btn btn-info btn-sm mr-1" title="Consulter">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <!-- Modifier -->
+                                <a href="{{ path('app_voiture_edit', {id: voiture.id}) }}"
+                                   class="btn btn-warning btn-sm mr-1" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <!-- Supprimer -->
+                                <button type="button" class="btn btn-danger btn-sm"
+                                        title="Supprimer"
+                                        data-toggle="modal"
+                                        data-target="#deleteModal{{ voiture.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <!-- Modal Suppression -->
+                                <div class="modal fade" id="deleteModal{{ voiture.id }}" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-exclamation-triangle mr-2"></i>Confirmer la suppression
+                                                </h5>
+                                                <button class="close text-white" type="button" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Voulez-vous vraiment supprimer la voiture
+                                                <strong>{{ voiture.marque }} {{ voiture.modele }}</strong> ?
+                                                <br><small class="text-muted">Cette action est irréversible.</small>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                    <i class="fas fa-times mr-1"></i>Annuler
+                                                </button>
+                                                <form method="post" action="{{ path('app_voiture_delete', {id: voiture.id}) }}" style="display:inline">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ voiture.id) }}">
+                                                    <button class="btn btn-danger" type="submit">
+                                                        <i class="fas fa-trash mr-1"></i>Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

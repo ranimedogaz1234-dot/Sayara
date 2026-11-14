@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier — {{ voiture.marque }} {{ voiture.modele }}{% endblock %}
+
+{% block body %}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-edit text-warning mr-2"></i>Modifier la Voiture
+    </h1>
+    <a href="{{ path('app_voiture_index') }}" class="btn btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left fa-sm mr-1"></i>Retour à la liste
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-warning text-dark">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-car mr-2"></i>{{ voiture.marque }} {{ voiture.modele }} — Modification
+                </h6>
+            </div>
+            <div class="card-body p-4">
+
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700">
+                                <i class="fas fa-tag mr-1 text-primary"></i> Marque
+                            </label>
+                            {{ form_widget(form.marque, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.marque) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700">
+                                <i class="fas fa-car-side mr-1 text-primary"></i> Modèle
+                            </label>
+                            {{ form_widget(form.modele, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.modele) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700">
+                                <i class="fas fa-money-bill-wave mr-1 text-success"></i> Prix par Jour (DT)
+                            </label>
+                            {{ form_widget(form.prixParJour, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.prixParJour) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-gray-700">
+                                <i class="fas fa-check-circle mr-1 text-success"></i> Disponibilité
+                            </label>
+                            <div class="mt-2">
+                                {{ form_widget(form.disponible, {'attr': {'class': 'form-check-input ml-0'}}) }}
+                                <label class="form-check-label ml-4 text-gray-600">Voiture disponible</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if form.image is defined %}
+                <div class="form-group">
+                    <label class="font-weight-bold text-gray-700">
+                        <i class="fas fa-image mr-1 text-info"></i> Image
+                    </label>
+                    {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.image) }}
+                </div>
+                {% endif %}
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_voiture_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-times mr-1"></i>Annuler
+                    </a>
+                    <button type="submit" class="btn btn-warning px-4">
+                        <i class="fas fa-save mr-1"></i>Enregistrer les Modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
