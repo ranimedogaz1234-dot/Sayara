@@ -28,7 +28,7 @@ class Reservation
     #[ORM\Column]
     private ?float $prixTotal = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'Le client est obligatoire.')]
     private ?User $client = null;
