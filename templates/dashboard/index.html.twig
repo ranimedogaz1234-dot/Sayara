@@ -65,7 +65,7 @@
                     <div class="mt-2"><span class="badge badge-success"><i class="fas fa-user mr-1"></i>Enregistrés</span></div>
                 </div>
                 <div class="ml-3">
-                    {% set cpct = [nb_clients, 50]|min %}
+                    {% set cpct = min(nb_clients, 50) %}
                     {% set cdash = (cpct / 50) * 175.93 %}
                     <div class="circle-wrap" style="width:72px;height:72px;">
                         <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="28" fill="none" stroke="#e3e6f0" stroke-width="7"/><circle cx="36" cy="36" r="28" fill="none" stroke="#1cc88a" stroke-width="7" stroke-dasharray="{{ cdash }} 175.93" stroke-linecap="round"/></svg>
