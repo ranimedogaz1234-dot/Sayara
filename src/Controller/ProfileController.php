@@ -39,11 +39,20 @@ final class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // UserType maps every field, the password included, straight onto
+            // $user - the same object the security token keeps in the session.
+            // Hold the submitted password here; the paths that bail out below
+            // call refresh() to drop every in-memory change, so neither the
+            // plaintext password nor a rejected username reaches the session.
+            $submittedPassword = $user->getPassword();
+
             // Check username uniqueness (skip if same user)
             $existing = $entityManager->getRepository(\App\Entity\User::class)
                 ->findOneBy(['username' => $user->getUsername()]);
             if ($existing && $existing->getId() !== $user->getId()) {
                 $this->addFlash('error', 'Ce nom d\'utilisateur est déjà utilisé.');
+                $entityManager->refresh($user);
+
                 return $this->render('profile/edit.html.twig', [
                     'form' => $form,
                 ]);
@@ -54,23 +63,30 @@ final class ProfileController extends AbstractController
                 ->findOneBy(['email' => $user->getEmail()]);
             if ($existingEmail && $existingEmail->getId() !== $user->getId()) {
                 $this->addFlash('error', 'Cet email est déjà utilisé.');
+                $entityManager->refresh($user);
+
                 return $this->render('profile/edit.html.twig', [
                     'form' => $form,
                 ]);
             }
 
-            $newPassword = $user->getPassword();
-            if (!$newPassword) {
-                $user->setPassword($currentPassword);
+            // An empty field means "keep the current password".
+            if ($submittedPassword) {
+                $user->setPassword($passwordHasher->hashPassword($user, $submittedPassword));
             } else {
-                $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
-                $user->setPassword($hashedPassword);
+                $user->setPassword($currentPassword);
             }
 
             $entityManager->flush();
             $this->addFlash('success', 'Profil mis à jour avec succès!');
 
             return $this->redirectToRoute('app_profile');
+        }
+
+        // A submitted-but-invalid form leaves the raw password and the rejected
+        // values on the entity too, so discard them the same way.
+        if ($form->isSubmitted()) {
+            $entityManager->refresh($user);
         }
 
         return $this->render('profile/edit.html.twig', [

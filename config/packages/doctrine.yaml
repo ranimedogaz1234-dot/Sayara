@@ -24,6 +24,10 @@ doctrine:
 when@test:
     doctrine:
         dbal:
+            # dbname_suffix has no effect on a SQLite file path, so the test
+            # suite would otherwise run against the development database and
+            # its fixtures would delete real rows. Give it its own file.
+            url: 'sqlite:///%kernel.project_dir%/var/test.db'
             # "TEST_TOKEN" is typically set by ParaTest
             dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
