@@ -1,126 +1,137 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}CarRent{% endblock %}
+{% block title %}Luxury car rental{% endblock %}
+{% block nav_transparent %}yes{% endblock %}
 
 {% block body %}
-<section class="cr-hero">
-    <div class="container text-center">
-        <h1 class="cr-reveal cr-visible">Experience Luxury.<br>Drive Extraordinary.</h1>
-        <p class="lead cr-reveal cr-visible">
-            Choose from our finest selection of premium vehicles and embark on a journey of elegance.
-        </p>
-
-        {# Search bar. Return location has no backing field on Voiture (no
-           location concept exists in the data model), so it is kept as a
-           plain descriptive field rather than wired to a fake filter -
-           see the PR description for this documented limitation. Dates
-           are validated server-side in HomeController::catalog() and
-           carried through to the vehicle list and "Book Now" links. #}
-        <form class="cr-search cr-reveal cr-visible" action="{{ path('app_catalog') }}" method="get" style="max-width:980px;margin:0 auto;">
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                    <label for="searchQ">Vehicle / Brand</label>
-                    <input type="text" id="searchQ" name="q" class="form-control cr-input" placeholder="e.g. BMW, Audi...">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                    <label for="pickupDate">Pick-up Date</label>
-                    <input type="date" id="pickupDate" name="pickupDate" class="form-control cr-input">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                    <label for="returnDate">Return Date</label>
-                    <input type="date" id="returnDate" name="returnDate" class="form-control cr-input">
-                </div>
-                <div class="col-lg-3 col-md-6 d-flex align-items-end">
-                    <button type="submit" class="btn-cr-primary w-100">
-                        <i class="fas fa-search mr-1"></i> Search Vehicles
-                    </button>
-                </div>
-            </div>
-        </form>
-
-        {% if featuredVoitures|length > 0 %}
-            <div class="cr-stage" data-controller="hero-carousel">
-                <button type="button" class="cr-arrow cr-prev" data-action="hero-carousel#prev" aria-label="Previous vehicle">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button type="button" class="cr-arrow cr-next" data-action="hero-carousel#next" aria-label="Next vehicle">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
-                {% for voiture in featuredVoitures %}
-                    <div class="cr-stage-slide {{ loop.first ? 'cr-active' }}" data-hero-carousel-target="slide">
-                        {% if voiture.image %}
-                            <div class="cr-stage-img-wrap">
-                                <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}">
-                            </div>
-                        {% else %}
-                            <div class="cr-stage-fallback"><i class="fas fa-car-side"></i></div>
-                        {% endif %}
-                        <div class="cr-stage-ring"></div>
-                        <div class="cr-stage-caption">
-                            <h3>{{ voiture.marque }} {{ voiture.modele }}</h3>
-                            <div class="price">{{ voiture.prixParJour }} DT / day</div>
-                            <a href="{{ path('app_catalog_show', {id: voiture.id}) }}" class="btn-cr-outline mt-3 d-inline-block">View Details</a>
-                        </div>
-                    </div>
-                {% endfor %}
-
-                <div class="cr-dots" data-hero-carousel-target="dots">
-                    {% for voiture in featuredVoitures %}
-                        <button type="button" class="cr-dot {{ loop.first ? 'cr-active' }}" data-action="hero-carousel#goTo" data-hero-carousel-index-param="{{ loop.index0 }}" aria-label="Go to vehicle {{ loop.index }}"></button>
-                    {% endfor %}
-                </div>
-            </div>
-        {% else %}
-            <div class="cr-stage-fallback mx-auto mt-5">
-                <i class="fas fa-car-side"></i>
-            </div>
-            <p class="text-muted mt-3">No vehicles are currently available. Please check back soon.</p>
-        {% endif %}
+{% set heroCredit = photo_credit('preview-rolls-royce-phantom.jpg') %}
+<section class="lx-hero">
+    <div class="lx-hero__media">
+        <img src="{{ asset('images/hero-phantom.jpg') }}" alt="A dark Rolls-Royce Phantom on a reflective showroom floor" fetchpriority="high">
     </div>
+
+    <div class="lx-hero__content">
+        <div class="container">
+            <span class="eyebrow cr-reveal cr-visible">Private fleet &middot; Daily rental &middot; Drive yourself</span>
+            <h1 class="display cr-reveal cr-visible">Drive the world's<br><em>most desirable</em> cars</h1>
+            <p class="lede cr-reveal cr-visible">A curated collection of exceptional cars, available by the day — reserved online, priced transparently.</p>
+
+            {# Every field maps to a real filter in HomeController::catalog():
+               make -> brand, model -> q (brand/model search), and the two
+               dates are validated server-side and carried through to the
+               booking form. No location filter: Voiture has no location. #}
+            <form class="lx-search cr-reveal cr-visible" action="{{ path('app_catalog') }}" method="get">
+                <div class="lx-search__field">
+                    <label for="sBrand">Make</label>
+                    <select id="sBrand" name="brand">
+                        <option value="">Any make</option>
+                        {% for brand in brands %}<option value="{{ brand }}">{{ brand }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="lx-search__field">
+                    <label for="sQ">Model</label>
+                    <input type="text" id="sQ" name="q" placeholder="Any model" autocomplete="off">
+                </div>
+                <div class="lx-search__field">
+                    <label for="sPick">Pick-up</label>
+                    <input type="date" id="sPick" name="pickupDate" min="{{ 'now'|date('Y-m-d') }}">
+                </div>
+                <div class="lx-search__field">
+                    <label for="sReturn">Return</label>
+                    <input type="date" id="sReturn" name="returnDate" min="{{ 'now'|date('Y-m-d') }}">
+                </div>
+                <button type="submit" class="lx-search__submit"><i class="fas fa-search" aria-hidden="true"></i> Search</button>
+            </form>
+        </div>
+    </div>
+
+    {% if heroCredit %}
+        <p class="lx-hero__credit">Rolls-Royce Phantom &middot; Photo {{ heroCredit.author }}, <a href="{{ heroCredit.licenseUrl }}" rel="license noopener" target="_blank">{{ heroCredit.license }}</a></p>
+    {% endif %}
 </section>
 
-<section class="cr-section" id="brands">
+<section class="lx-section">
     <div class="container">
-        <div class="cr-section-title cr-reveal">
-            <h2>Our Luxury Brands</h2>
-            <div class="cr-underline"></div>
-            <p>Browse our fleet by manufacturer</p>
-        </div>
-        {% if brands|length > 0 %}
-            <div class="cr-brands-grid cr-reveal">
-                {% for brand in brands %}
-                    <a href="{{ path('app_catalog', {brand: brand}) }}" class="cr-brand">
-                        <i class="fas fa-car"></i>
-                        <span>{{ brand }}</span>
-                    </a>
-                {% endfor %}
+        <div class="lx-head cr-reveal">
+            <div>
+                <span class="eyebrow eyebrow--rule">The collection</span>
+                <h2 class="title">Featured <em>this week</em></h2>
             </div>
-        {% else %}
-            <p class="text-center text-muted">No vehicle brands are in the catalog yet.</p>
-        {% endif %}
-    </div>
-</section>
-
-<section class="cr-section" style="background:var(--cr-black-soft);">
-    <div class="container">
-        <div class="cr-section-title cr-reveal">
-            <h2>Featured Fleet</h2>
-            <div class="cr-underline"></div>
-            <p>A glimpse of what's available right now</p>
+            <a class="link-lx" href="{{ path('app_catalog') }}">View the full fleet <span class="arrow">&rarr;</span></a>
         </div>
         {% if featuredVoitures|length > 0 %}
-            <div class="cr-grid">
+            <div class="lx-grid">
                 {% for voiture in featuredVoitures %}
                     {% include 'home/_car_card.html.twig' with {voiture: voiture} %}
                 {% endfor %}
             </div>
-            <div class="text-center mt-5 cr-reveal">
-                <a href="{{ path('app_catalog') }}" class="btn-cr-outline">View Full Fleet <i class="fas fa-arrow-right ml-1"></i></a>
-            </div>
         {% else %}
-            <p class="text-center text-muted">No vehicles are currently available.</p>
+            <p class="lede">No vehicles are available at the moment. Please check back soon.</p>
         {% endif %}
+    </div>
+</section>
+
+<section class="lx-section lx-section--line" id="marques">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-5 mb-5 mb-lg-0 cr-reveal">
+                <span class="eyebrow eyebrow--rule">The marques</span>
+                <h2 class="title mt-4">Houses of <em>distinction</em></h2>
+                <p class="lede mt-4">Every name below is in the fleet today. Choose a marque to see its available cars.</p>
+            </div>
+            <div class="col-lg-6 offset-lg-1 cr-reveal">
+                {% if brandCounts|length > 0 %}
+                    <ul class="lx-marques">
+                        {% for brand, total in brandCounts %}
+                            <li><a href="{{ path('app_catalog', {brand: brand}) }}">
+                                <span class="name">{{ brand }}</span>
+                                <span class="count">{{ '%02d'|format(total) }} {{ total > 1 ? 'cars' : 'car' }} &rarr;</span>
+                            </a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="lede">No marques are available right now.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="lx-section lx-section--line">
+    <div class="container">
+        <div class="lx-head cr-reveal">
+            <div>
+                <span class="eyebrow eyebrow--rule">The CarRent standard</span>
+                <h2 class="title">Simple, <em>by design</em></h2>
+            </div>
+        </div>
+        <div class="lx-pillars cr-reveal">
+            <div class="lx-pillar">
+                <span class="num">01</span>
+                <h3>Transparent pricing</h3>
+                <p>Every rate is quoted per day, and your total is calculated from your exact dates before you confirm.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">02</span>
+                <h3>Reserved in minutes</h3>
+                <p>Choose a car and your dates, review the total and confirm online. Your booking appears in your account at once.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">03</span>
+                <h3>Private to you</h3>
+                <p>Your account is password-protected, and your bookings are visible only to you.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="lx-section pt-0">
+    <div class="container">
+        <div class="lx-cta cr-reveal">
+            <span class="eyebrow">Your next drive</span>
+            <h2 class="title">Find the car that <em>suits the occasion</em></h2>
+            <a class="btn-lx btn-lx--gold" href="{{ path('app_catalog') }}">Explore the fleet</a>
+        </div>
     </div>
 </section>
 {% endblock %}

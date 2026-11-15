@@ -1,26 +1,41 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}About Us{% endblock %}
+{% block title %}About{% endblock %}
 
 {% block body %}
-<section class="cr-section pt-5">
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'About CarRent',
+    title: 'Exceptional cars,',
+    em: 'simply rented',
+    lede: 'CarRent makes booking a remarkable car as straightforward as it should be: choose, check the price, confirm.',
+} %}
+
+<section class="lx-section">
     <div class="container">
-        <div class="cr-section-title cr-reveal cr-visible">
-            <h2>About CarRent</h2>
-            <div class="cr-underline"></div>
-        </div>
-        <div class="row justify-content-center cr-reveal cr-visible">
-            <div class="col-lg-8">
-                <div class="cr-panel cr-panel-body">
-                    <p class="mb-3">CarRent is a premium vehicle rental platform built to make booking a high-end car simple, transparent and secure.</p>
-                    <ul class="list-unstyled" style="color: var(--cr-gray-300);">
-                        <li class="mb-2"><i class="fas fa-check mr-2 text-white-50"></i>Competitive, transparent daily pricing</li>
-                        <li class="mb-2"><i class="fas fa-check mr-2 text-white-50"></i>A well-maintained, available fleet</li>
-                        <li class="mb-2"><i class="fas fa-check mr-2 text-white-50"></i>A simple, secure booking flow from browsing to confirmation</li>
-                        <li class="mb-2"><i class="fas fa-check mr-2 text-white-50"></i>Your account and reservation data kept private and secure</li>
-                    </ul>
-                </div>
+        <div class="row">
+            <div class="col-lg-5 mb-5 mb-lg-0 cr-reveal">
+                <span class="eyebrow eyebrow--rule">Our approach</span>
+                <h2 class="title mt-4">Fewer steps, <em>no surprises</em></h2>
             </div>
+            <div class="col-lg-6 offset-lg-1 cr-reveal">
+                <p class="lede mb-4" style="max-width:none;">Every car in the fleet is listed with its daily rate. When you choose your dates, the total is calculated from them before you confirm, and your booking appears in your account straight away.</p>
+                <p class="lede" style="max-width:none;">Your account is protected by your password, and your bookings are visible only to you.</p>
+            </div>
+        </div>
+        <div class="lx-pillars mt-5 cr-reveal">
+            <div class="lx-pillar"><span class="num">01</span><h3>Choose</h3><p>Browse the fleet by make, model or price and open any car for its details.</p></div>
+            <div class="lx-pillar"><span class="num">02</span><h3>Check</h3><p>Pick your dates and see the total before anything is confirmed.</p></div>
+            <div class="lx-pillar"><span class="num">03</span><h3>Confirm</h3><p>Reserve online and find the booking in your account, ready for the next step.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="lx-section pt-0">
+    <div class="container">
+        <div class="lx-cta cr-reveal">
+            <span class="eyebrow">The fleet</span>
+            <h2 class="title">See what is <em>available today</em></h2>
+            <a class="btn-lx btn-lx--gold" href="{{ path('app_catalog') }}">Explore the fleet</a>
         </div>
     </div>
 </section>

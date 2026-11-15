@@ -1,0 +1,14 @@
+{# Shared inner-page header.
+   Params (all auto-escaped - safe for user-provided values such as a name):
+     eyebrow   small gold label
+     title     serif heading text
+     em        optional phrase rendered in gold italics after the title
+     lede      optional supporting sentence
+     compact   optional, smaller bottom padding #}
+<header class="lx-pagehead{{ compact|default(false) ? ' lx-pagehead--compact' }}">
+    <div class="container">
+        <span class="eyebrow eyebrow--rule cr-reveal cr-visible">{{ eyebrow }}</span>
+        <h1 class="display cr-reveal cr-visible">{{ title }}{% if em|default %} <em>{{ em }}</em>{% endif %}</h1>
+        {% if lede|default %}<p class="lede cr-reveal cr-visible">{{ lede }}</p>{% endif %}
+    </div>
+</header>

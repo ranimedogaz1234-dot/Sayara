@@ -1,11 +1,14 @@
+{% set route = app.request.attributes.get('_route') %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}CarRent{% endblock %} — Luxury Car Rental</title>
-    <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700,800,900" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% block title %}CarRent{% endblock %} — CarRent</title>
+    <meta name="description" content="{% block description %}CarRent — a curated fleet of luxury cars, available to rent by the day.{% endblock %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/luxury.css') }}">
@@ -13,104 +16,124 @@
 </head>
 <body class="luxury-body">
 
-<nav class="navbar navbar-expand-lg cr-nav">
+{# Transparent over the homepage hero, solid everywhere else. #}
+{% set navTransparent = block('nav_transparent') is defined and block('nav_transparent')|trim == 'yes' %}
+<nav class="lx-nav {{ navTransparent ? '' : 'is-solid' }}" data-transparent="{{ navTransparent ? 'true' : 'false' }}" aria-label="Main">
     <div class="container">
-        <a class="navbar-brand" href="{{ path('app_home') }}">Car<span>Rent</span></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#crNavMain" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <a class="lx-brand" href="{{ path('app_home') }}">CarRent</a>
+
+        <button class="lx-burger" type="button" data-toggle="collapse" data-target="#lxNav" aria-controls="lxNav" aria-expanded="false" aria-label="Menu">
+            <span></span><span></span>
         </button>
-        <div class="collapse navbar-collapse" id="crNavMain">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'app_home' ? 'active' }}" href="{{ path('app_home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'app_catalog' ? 'active' }}" href="{{ path('app_catalog') }}">Our Fleet</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ path('app_home') }}#brands">Car Brands</a></li>
-                <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'app_about' ? 'active' }}" href="{{ path('app_about') }}">About Us</a></li>
-                <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'app_contact' ? 'active' }}" href="{{ path('app_contact') }}">Contact</a></li>
+
+        <div class="collapse lx-collapse" id="lxNav">
+            <ul class="lx-menu">
+                <li><a href="{{ path('app_catalog') }}" class="{{ route in ['app_catalog', 'app_catalog_show'] ? 'is-active' }}">Fleet</a></li>
+                <li><a href="{{ path('app_home') }}#marques">Marques</a></li>
+                <li><a href="{{ path('app_about') }}" class="{{ route == 'app_about' ? 'is-active' }}">About</a></li>
+                <li><a href="{{ path('app_contact') }}" class="{{ route == 'app_contact' ? 'is-active' }}">Contact</a></li>
             </ul>
-            <ul class="navbar-nav ml-auto align-items-lg-center">
+
+            <div class="lx-actions">
                 {% if app.user %}
-                    <li class="nav-item dropdown no-arrow">
-                        <a class="nav-link dropdown-toggle" href="#" id="crUserDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user-circle mr-1"></i>{{ app.user.nom }}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right cr-dropdown-menu" aria-labelledby="crUserDropdown">
+                    <div class="dropdown lx-account">
+                        <button class="btn-lx btn-lx--outline btn-lx--sm dropdown-toggle" type="button" id="lxAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ is_granted('ROLE_ADMIN') ? 'Dashboard' : 'My account' }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lxAccount">
+                            <div class="dropdown-header">
+                                <span class="meta">Signed in as</span>
+                                <strong title="{{ app.user.nom }}">{{ app.user.nom }}</strong>
+                            </div>
                             {% if is_granted('ROLE_ADMIN') %}
-                                <a class="dropdown-item" href="{{ path('app_dashboard') }}"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
-                                <div class="dropdown-divider" style="border-color: var(--cr-border);"></div>
+                                <a class="dropdown-item" href="{{ path('app_dashboard') }}">Admin dashboard</a>
                             {% else %}
-                                <a class="dropdown-item" href="{{ path('app_profile') }}"><i class="fas fa-user mr-2"></i>My Account</a>
+                                <a class="dropdown-item" href="{{ path('app_profile') }}">My account</a>
                             {% endif %}
-                            <a class="dropdown-item" href="{{ path('app_reservation_index') }}"><i class="fas fa-calendar-alt mr-2"></i>My Bookings</a>
-                            <div class="dropdown-divider" style="border-color: var(--cr-border);"></div>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#crLogoutModal"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                            <a class="dropdown-item" href="{{ path('app_reservation_index') }}">My bookings</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#crLogoutModal">Sign out</a>
                         </div>
-                    </li>
+                    </div>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ path('app_login') }}">Login</a></li>
-                    <li class="nav-item ml-lg-2"><a class="btn-cr-primary" href="{{ path('app_signup') }}">Register</a></li>
+                    <a class="lx-signin" href="{{ path('app_login') }}">Sign in</a>
+                    <a class="btn-lx btn-lx--outline btn-lx--sm" href="{{ path('app_signup') }}">Register</a>
                 {% endif %}
-            </ul>
+            </div>
         </div>
     </div>
 </nav>
 
-<main>
-    <div class="container pt-4">
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success alert-dismissible fade show cr-reveal cr-visible" role="alert">
-                <i class="fas fa-check-circle mr-2"></i>{{ message }}
-                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-            </div>
+{% set flashes = app.flashes(['success', 'error']) %}
+{% if flashes.success is not empty or flashes.error is not empty %}
+    <div class="lx-flash" role="status">
+        {% for message in flashes.success %}
+            <div class="alert alert-success alert-dismissible fade show">{{ message }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button></div>
         {% endfor %}
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger alert-dismissible fade show cr-reveal cr-visible" role="alert">
-                <i class="fas fa-exclamation-circle mr-2"></i>{{ message }}
-                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-            </div>
+        {% for message in flashes.error %}
+            <div class="alert alert-danger alert-dismissible fade show">{{ message }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button></div>
         {% endfor %}
     </div>
+{% endif %}
 
+<main class="{% block main_class %}{% endblock %}">
     {% block body %}{% endblock %}
 </main>
 
-<footer class="cr-footer">
+<footer class="lx-footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h6>CarRent</h6>
-                <p class="small mb-0">Dubai-grade luxury car rental — built as a Symfony portfolio project. Rent extraordinary vehicles with a refined, modern experience.</p>
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <a class="lx-brand" href="{{ path('app_home') }}">CarRent</a>
+                <p class="mt-4 mb-0" style="max-width: 300px;">A curated fleet of exceptional cars, rented by the day — with transparent pricing and bookings that stay private to you.</p>
             </div>
-            <div class="col-md-4 mb-4 mb-md-0">
-                <h6>Quick Links</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ path('app_home') }}">Home</a></li>
-                    <li class="mb-2"><a href="{{ path('app_catalog') }}">Our Fleet</a></li>
-                    <li class="mb-2"><a href="{{ path('app_about') }}">About Us</a></li>
-                    <li class="mb-2"><a href="{{ path('app_contact') }}">Contact</a></li>
+            <div class="col-6 col-lg-2 offset-lg-1 mb-5 mb-lg-0">
+                <h6>Explore</h6>
+                <ul>
+                    <li><a href="{{ path('app_catalog') }}">The fleet</a></li>
+                    <li><a href="{{ path('app_home') }}#marques">Marques</a></li>
+                    <li><a href="{{ path('app_about') }}">About</a></li>
                 </ul>
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-lg-2 mb-5 mb-lg-0">
+                <h6>Account</h6>
+                <ul>
+                    {% if app.user %}
+                        <li><a href="{{ path('app_reservation_index') }}">My bookings</a></li>
+                        <li><a href="{{ path('app_profile') }}">My account</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}">Sign in</a></li>
+                        <li><a href="{{ path('app_signup') }}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-lg-3">
                 <h6>Contact</h6>
-                <p class="small mb-1"><i class="fas fa-envelope mr-2"></i>contact@carrent.example</p>
-                <p class="small mb-0"><i class="fas fa-phone mr-2"></i>+33 1 00 00 00 00</p>
+                <ul>
+                    <li>contact@carrent.example</li>
+                    <li>+33 1 00 00 00 00</li>
+                    <li><a href="{{ path('app_contact') }}">Contact page</a></li>
+                </ul>
             </div>
         </div>
-        <div class="cr-copy">&copy; {{ "now"|date("Y") }} CarRent. All rights reserved.</div>
+        <div class="lx-footer__base">
+            <span>&copy; {{ "now"|date("Y") }} CarRent. All rights reserved.</span>
+            <a href="{{ path('app_credits') }}">Photography credits</a>
+        </div>
     </div>
 </footer>
 
 {% if app.user %}
-<div class="modal fade" id="crLogoutModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="crLogoutModal" tabindex="-1" role="dialog" aria-labelledby="crLogoutTitle">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="background: var(--cr-black-card); border: 1px solid var(--cr-border); color: #fff;">
-            <div class="modal-header" style="border-color: var(--cr-border);">
-                <h5 class="modal-title">Confirm logout</h5>
-                <button class="close text-white" type="button" data-dismiss="modal"><span>&times;</span></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="crLogoutTitle">Sign out</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
             </div>
-            <div class="modal-body">Are you sure you want to log out of CarRent?</div>
-            <div class="modal-footer" style="border-color: var(--cr-border);">
-                <button class="btn-cr-outline" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn-cr-primary" href="{{ logout_path() }}">Logout</a>
+            <div class="modal-body">Are you sure you want to sign out of CarRent?</div>
+            <div class="modal-footer">
+                <button class="btn-lx btn-lx--outline btn-lx--sm" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn-lx btn-lx--gold btn-lx--sm" href="{{ logout_path() }}">Sign out</a>
             </div>
         </div>
     </div>
@@ -120,26 +143,35 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Reveal-on-scroll: progressive enhancement only. Elements are visible
-    // by default (see .cr-reveal in luxury.css); if IntersectionObserver is
-    // unavailable or prefers-reduced-motion is set, they simply stay visible
-    // with no animation, never hidden.
     (function () {
-        var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var items = document.querySelectorAll('.cr-reveal');
-        if (prefersReduced || !('IntersectionObserver' in window)) {
-            items.forEach(function (el) { el.classList.add('cr-visible'); });
-            return;
+        // Transparent nav over the hero becomes solid once the page scrolls.
+        var nav = document.querySelector('.lx-nav');
+        if (nav && nav.dataset.transparent === 'true') {
+            var update = function () { nav.classList.toggle('is-solid', window.scrollY > 40); };
+            update();
+            window.addEventListener('scroll', update, { passive: true });
+            // Opening the mobile menu over the hero needs a solid backdrop.
+            $('#lxNav').on('show.bs.collapse', function () { nav.classList.add('is-solid'); })
+                       .on('hidden.bs.collapse', update);
         }
-        var observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('cr-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-        items.forEach(function (el) { observer.observe(el); });
+
+        // Reveal-on-scroll. Content is visible by default; this only adds a
+        // fade when IntersectionObserver exists and motion is allowed.
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var items = document.querySelectorAll('.cr-reveal:not(.cr-visible)');
+        if (reduce || !('IntersectionObserver' in window)) {
+            items.forEach(function (el) { el.classList.add('cr-visible'); });
+        } else {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { e.target.classList.add('cr-visible'); io.unobserve(e.target); }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+            items.forEach(function (el) { io.observe(el); });
+        }
+
+        // Flash messages fade out on their own after a few seconds.
+        setTimeout(function () { $('.lx-flash .alert').alert('close'); }, 6000);
     })();
 </script>
 {% block javascripts %}{% endblock %}

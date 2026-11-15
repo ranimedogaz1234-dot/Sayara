@@ -36,6 +36,28 @@ class VoitureRepository extends ServiceEntityRepository
     }
 
     /**
+     * Number of currently available vehicles per brand, for the homepage's
+     * brand index (e.g. "Mercedes-Benz — 02"). Brands whose every vehicle is
+     * unavailable are omitted, so every listed brand leads to a non-empty
+     * catalog page.
+     *
+     * @return array<string, int>
+     */
+    public function countAvailableByBrand(): array
+    {
+        $rows = $this->createQueryBuilder('v')
+            ->select('v.marque AS marque, COUNT(v.id) AS total')
+            ->where('v.disponible = :dispo')
+            ->setParameter('dispo', true)
+            ->groupBy('v.marque')
+            ->orderBy('v.marque', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'total', 'marque');
+    }
+
+    /**
      * Available vehicles (disponible = true), optionally filtered by brand
      * and/or a free-text search across brand and model, and sorted by one
      * of a fixed set of real columns. Everything here maps to an actual

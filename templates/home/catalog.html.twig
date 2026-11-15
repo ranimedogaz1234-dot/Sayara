@@ -1,56 +1,65 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}Our Fleet{% endblock %}
+{% block title %}The fleet{% endblock %}
 
 {% block body %}
-<section class="cr-section pt-5">
-    <div class="container">
-        <div class="cr-section-title cr-reveal cr-visible">
-            <h2>Our Fleet</h2>
-            <div class="cr-underline"></div>
-            <p>{{ voitures|length }} vehicle{{ voitures|length != 1 ? 's' }} available{% if currentBrand %} — {{ currentBrand }}{% endif %}</p>
-        </div>
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'The fleet',
+    title: currentBrand ? currentBrand : 'Our',
+    em: 'collection',
+    lede: voitures|length ~ (voitures|length == 1 ? ' car' : ' cars') ~ ' available' ~ (pickupDate and returnDate ? ' — your dates are carried through to booking.' : ', each bookable by the day.'),
+} %}
 
-        <form class="cr-filter-bar cr-reveal cr-visible" method="get" action="{{ path('app_catalog') }}">
-            <div class="form-group flex-grow-1" style="min-width:180px;">
-                <label for="filterQ">Search</label>
-                <input type="text" id="filterQ" name="q" class="form-control cr-input" placeholder="Brand or model..." value="{{ currentQuery }}">
+<section class="lx-section--tight">
+    <div class="container">
+        {# Only real filters: brand/model search (q), make (brand), sort.
+           Dates from the homepage search are kept as hidden fields. #}
+        <form class="lx-search lx-search--wide cr-reveal cr-visible mb-5" method="get" action="{{ path('app_catalog') }}">
+            <div class="lx-search__field">
+                <label for="fQ">Search</label>
+                <input type="text" id="fQ" name="q" placeholder="Make or model" value="{{ currentQuery }}">
             </div>
-            <div class="form-group" style="min-width:160px;">
-                <label for="filterBrand">Brand</label>
-                <select id="filterBrand" name="brand" class="form-control cr-input">
-                    <option value="">All brands</option>
-                    {% for brand in brands %}
-                        <option value="{{ brand }}" {{ currentBrand == brand ? 'selected' }}>{{ brand }}</option>
-                    {% endfor %}
+            <div class="lx-search__field">
+                <label for="fBrand">Make</label>
+                <select id="fBrand" name="brand">
+                    <option value="">All makes</option>
+                    {% for brand in brands %}<option value="{{ brand }}" {{ currentBrand == brand ? 'selected' }}>{{ brand }}</option>{% endfor %}
                 </select>
             </div>
-            <div class="form-group" style="min-width:160px;">
-                <label for="filterSort">Sort by</label>
-                <select id="filterSort" name="sort" class="form-control cr-input">
-                    <option value="price_asc" {{ currentSort == 'price_asc' ? 'selected' }}>Price: Low to High</option>
-                    <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' }}>Price: High to Low</option>
-                    <option value="name" {{ currentSort == 'name' ? 'selected' }}>Brand name</option>
+            <div class="lx-search__field">
+                <label for="fSort">Sort by</label>
+                <select id="fSort" name="sort">
+                    <option value="price_asc" {{ currentSort == 'price_asc' ? 'selected' }}>Price, low to high</option>
+                    <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' }}>Price, high to low</option>
+                    <option value="name" {{ currentSort == 'name' ? 'selected' }}>Make, A to Z</option>
                 </select>
+            </div>
+            <div class="lx-search__field">
+                <label>Your dates</label>
+                <span style="font-size:14px;color:var(--ivory-70);">
+                    {% if pickupDate and returnDate %}{{ pickupDate|date('d M') }} — {{ returnDate|date('d M Y') }}{% else %}Choose on the car's page{% endif %}
+                </span>
             </div>
             {% if pickupDate %}<input type="hidden" name="pickupDate" value="{{ pickupDate }}">{% endif %}
             {% if returnDate %}<input type="hidden" name="returnDate" value="{{ returnDate }}">{% endif %}
-            <div class="form-group">
-                <button type="submit" class="btn-cr-primary">Apply</button>
-                <a href="{{ path('app_catalog') }}" class="btn-cr-outline ml-2">Reset</a>
-            </div>
+            <button type="submit" class="lx-search__submit">Apply</button>
         </form>
 
+        {% if currentBrand or currentQuery %}
+            <p class="meta mb-5">Filtered results &middot; <a href="{{ path('app_catalog') }}" style="color:var(--gold);">Clear filters</a></p>
+        {% endif %}
+
         {% if voitures|length > 0 %}
-            <div class="cr-grid">
+            <div class="lx-grid">
                 {% for voiture in voitures %}
                     {% include 'home/_car_card.html.twig' with {voiture: voiture, pickupDate: pickupDate, returnDate: returnDate} %}
                 {% endfor %}
             </div>
         {% else %}
-            <div class="alert alert-danger cr-reveal cr-visible text-center py-5">
-                <i class="fas fa-car-side fa-2x mb-3 d-block"></i>
-                No vehicles match your search right now. Try adjusting your filters.
+            <div class="lx-cta">
+                <span class="eyebrow">No match</span>
+                <h2 class="title">Nothing fits <em>those filters</em></h2>
+                <a class="btn-lx btn-lx--outline" href="{{ path('app_catalog') }}">View every car</a>
             </div>
         {% endif %}
     </div>

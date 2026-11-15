@@ -3,55 +3,92 @@
 {% block title %}{{ voiture.marque }} {{ voiture.modele }}{% endblock %}
 
 {% block body %}
-<section class="cr-section pt-5">
+{% set credit = photo_credit(voiture.image) %}
+<section class="lx-detail">
     <div class="container">
-        <a href="{{ path('app_catalog') }}" class="btn-cr-outline mb-4 d-inline-block cr-reveal cr-visible">
-            <i class="fas fa-arrow-left mr-1"></i> Back to fleet
-        </a>
+        <nav class="lx-crumbs meta cr-reveal cr-visible" aria-label="Breadcrumb">
+            <a href="{{ path('app_home') }}">Home</a><span class="sep">/</span><a href="{{ path('app_catalog') }}">Fleet</a><span class="sep">/</span><span style="color:var(--ivory-70);">{{ voiture.marque }}</span>
+        </nav>
 
-        <div class="row cr-reveal cr-visible">
-            <div class="col-lg-7 mb-4">
-                <div class="cr-panel" style="overflow:hidden;">
-                    {% if voiture.image %}
-                        <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="w-100" style="display:block; max-height:460px; object-fit:cover;">
-                    {% else %}
-                        <div class="cr-stage-fallback" style="width:100%;height:360px;border-radius:0;">
-                            <i class="fas fa-car-side"></i>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="cr-panel cr-panel-body h-100 d-flex flex-column">
-                    <h1 class="h2 font-weight-bold mb-1">{{ voiture.marque }}</h1>
-                    <p class="text-muted mb-3">{{ voiture.modele }}</p>
-
-                    {% if voiture.disponible %}
-                        <span class="cr-pill cr-pill-confirmed mb-4" style="align-self:flex-start;"><i class="fas fa-check-circle mr-1"></i>Available</span>
-                    {% else %}
-                        <span class="cr-pill cr-pill-pending mb-4" style="align-self:flex-start;background:rgba(231,76,60,.15);color:var(--cr-danger);border-color:rgba(231,76,60,.4);"><i class="fas fa-times-circle mr-1"></i>Currently unavailable</span>
-                    {% endif %}
-
-                    <div class="cr-card-price mb-4">{{ voiture.prixParJour }} DT <small>/ day</small></div>
-
-                    <ul class="list-unstyled mb-4" style="color: var(--cr-gray-300);">
-                        <li class="mb-2"><i class="fas fa-tag mr-2 text-white-50"></i>Brand: <strong class="text-white">{{ voiture.marque }}</strong></li>
-                        <li class="mb-2"><i class="fas fa-car mr-2 text-white-50"></i>Model: <strong class="text-white">{{ voiture.modele }}</strong></li>
-                    </ul>
-
-                    <div class="mt-auto">
-                        {% if voiture.disponible %}
-                            <a href="{{ path('app_reservation_new', {voiture: voiture.id, pickupDate: pickupDate, returnDate: returnDate}) }}" class="btn-cr-primary w-100 d-block text-center">
-                                <i class="fas fa-calendar-check mr-1"></i> Book This Vehicle
-                            </a>
+        <div class="row">
+            <div class="col-lg-7 mb-5 mb-lg-0 cr-reveal cr-visible">
+                <div class="lx-gallery">
+                    <div class="lx-gallery__main">
+                        {% if voiture.image %}
+                            <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}">
                         {% else %}
-                            <span class="btn-cr-outline w-100 d-block text-center" style="opacity:.5;">Unavailable for booking</span>
+                            <div class="lx-card__placeholder" style="font-size:34px;">{{ voiture.marque }}</div>
                         {% endif %}
                     </div>
                 </div>
+                {% if credit %}
+                    <p class="lx-credit">Photograph: {{ credit.author }} &middot; <a href="{{ credit.sourceUrl }}" target="_blank" rel="noopener">Wikimedia Commons</a> &middot; <a href="{{ credit.licenseUrl }}" target="_blank" rel="license noopener">{{ credit.license }}</a></p>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-4 offset-lg-1 cr-reveal cr-visible">
+                <span class="eyebrow eyebrow--rule">{{ voiture.marque }}</span>
+                <h1 class="lx-detail__title">{{ voiture.modele }}</h1>
+                <span class="lx-status {{ voiture.disponible ? '' : 'lx-status--off' }}">{{ voiture.disponible ? 'Available to book' : 'Currently unavailable' }}</span>
+
+                {# Only fields Voiture actually has - no invented specifications. #}
+                <dl class="lx-specs">
+                    <div><dt>Make</dt><dd>{{ voiture.marque }}</dd></div>
+                    <div><dt>Model</dt><dd>{{ voiture.modele }}</dd></div>
+                    <div><dt>Daily rate</dt><dd>{{ voiture.prixParJour|number_format(0, '.', ' ') }} DT</dd></div>
+                </dl>
+
+                {% if voiture.disponible %}
+                    {# Submits to the existing booking form, which pre-fills the
+                       car and dates (GET only) and re-validates everything. #}
+                    <form class="lx-book" method="get" action="{{ path('app_reservation_new') }}">
+                        <input type="hidden" name="voiture" value="{{ voiture.id }}">
+                        <span class="eyebrow mb-4 d-block">Choose your dates</span>
+                        <div class="row">
+                            <div class="col-6 lx-field">
+                                <label for="dPick">Pick-up</label>
+                                <input class="lx-input" type="date" id="dPick" name="pickupDate" value="{{ pickupDate }}" min="{{ 'now'|date('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-6 lx-field">
+                                <label for="dReturn">Return</label>
+                                <input class="lx-input" type="date" id="dReturn" name="returnDate" value="{{ returnDate }}" min="{{ 'now'|date('Y-m-d') }}" required>
+                            </div>
+                        </div>
+                        <p class="meta mb-4" id="dEstimate" aria-live="polite">Total calculated from your dates</p>
+                        <button type="submit" class="btn-lx btn-lx--gold btn-lx--block">Reserve this car</button>
+                        {% if not app.user %}<p class="meta mt-3 mb-0 text-center">You'll be asked to sign in first</p>{% endif %}
+                    </form>
+                {% else %}
+                    <div class="lx-book">
+                        <p class="mb-4" style="color:var(--ivory-70);">This car is booked at the moment. Browse the rest of the fleet for available alternatives.</p>
+                        <a class="btn-lx btn-lx--outline btn-lx--block" href="{{ path('app_catalog') }}">View available cars</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block javascripts %}
+{% if voiture.disponible %}
+<script>
+    // Display-only estimate, same formula as ReservationController::new()
+    // ((end - start) days + 1) * daily rate. The server recalculates the
+    // real total on booking; nothing here is trusted.
+    (function () {
+        var rate = {{ voiture.prixParJour|json_encode|raw }};
+        var a = document.getElementById('dPick'), b = document.getElementById('dReturn'), out = document.getElementById('dEstimate');
+        function update() {
+            if (!a.value || !b.value) { out.textContent = 'Total calculated from your dates'; return; }
+            var days = Math.round((new Date(b.value) - new Date(a.value)) / 86400000);
+            if (days <= 0) { out.textContent = 'Return must be after pick-up'; return; }
+            out.textContent = (days + 1) + ' days · estimated ' + ((days + 1) * rate).toLocaleString('fr-FR') + ' DT';
+        }
+        a.addEventListener('change', function () { b.min = a.value; update(); });
+        b.addEventListener('change', update);
+        update();
+    })();
+</script>
+{% endif %}
 {% endblock %}

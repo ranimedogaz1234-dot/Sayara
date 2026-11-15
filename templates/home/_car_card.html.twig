@@ -1,30 +1,25 @@
-{# Reused by home/index.html.twig and home/catalog.html.twig.
-   Expects: voiture, and optionally pickupDate / returnDate (carried from
-   the search bar into the "Book Now" link). #}
-<div class="cr-card cr-reveal">
-    <div class="cr-card-media">
+{# Vehicle card used on the homepage and the fleet page.
+   Expects: voiture; optionally pickupDate / returnDate (carried from the
+   search into the detail page). Shows only fields Voiture really has. #}
+<article class="lx-card cr-reveal">
+    <div class="lx-card__media">
         {% if voiture.image %}
-            <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" loading="lazy">
+            <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" loading="lazy" decoding="async">
         {% else %}
-            <i class="fas fa-car-side"></i>
+            <div class="lx-card__placeholder">{{ voiture.marque }}</div>
         {% endif %}
-        {% if voiture.disponible %}
-            <span class="cr-badge-status cr-badge-available">Available</span>
-        {% else %}
-            <span class="cr-badge-status cr-badge-unavailable">Unavailable</span>
-        {% endif %}
+        <span class="lx-tag {{ voiture.disponible ? '' : 'lx-tag--muted' }}">{{ voiture.disponible ? 'Available' : 'Unavailable' }}</span>
+        <span class="lx-card__frame"></span>
     </div>
-    <div class="cr-card-body">
-        <h5>{{ voiture.marque }}</h5>
-        <div class="cr-model">{{ voiture.modele }}</div>
-        <div class="cr-card-price">{{ voiture.prixParJour }} DT <small>/ day</small></div>
-        <div class="cr-card-actions">
-            <a href="{{ path('app_catalog_show', {id: voiture.id}) }}" class="btn-cr-outline">View Details</a>
-            {% if voiture.disponible %}
-                <a href="{{ path('app_reservation_new', {voiture: voiture.id, pickupDate: pickupDate|default(null), returnDate: returnDate|default(null)}) }}" class="btn-cr-primary">Book Now</a>
-            {% else %}
-                <span class="btn-cr-outline" style="opacity:.5;pointer-events:none;">Unavailable</span>
-            {% endif %}
+    <div class="lx-card__body">
+        <span class="eyebrow">{{ voiture.marque }}</span>
+        <h3 class="lx-card__name">
+            <a href="{{ path('app_catalog_show', {id: voiture.id, pickupDate: pickupDate|default(null), returnDate: returnDate|default(null)}) }}">{{ voiture.modele }}</a>
+        </h3>
+        <hr class="rule">
+        <div class="lx-card__foot">
+            <div class="lx-price">{{ voiture.prixParJour|number_format(0, '.', ' ') }} DT<small>Per day</small></div>
+            <span class="lx-card__cta" aria-hidden="true">View details</span>
         </div>
     </div>
-</div>
+</article>

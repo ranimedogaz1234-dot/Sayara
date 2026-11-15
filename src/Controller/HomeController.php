@@ -15,9 +15,10 @@ class HomeController extends AbstractController
     public function index(VoitureRepository $voitureRepository): Response
     {
         return $this->render('home/index.html.twig', [
-            // The hero carousel features up to 5 real, currently available
+            // The featured section shows up to 6 real, currently available
             // vehicles - never a fixed, possibly-stale list.
-            'featuredVoitures' => $voitureRepository->findBy(['disponible' => true], ['id' => 'DESC'], 5),
+            'featuredVoitures' => $voitureRepository->findBy(['disponible' => true], ['prixParJour' => 'DESC'], 6),
+            'brandCounts' => $voitureRepository->countAvailableByBrand(),
             'brands' => $voitureRepository->findDistinctBrands(),
         ]);
     }
@@ -93,5 +94,16 @@ class HomeController extends AbstractController
     public function contact(): Response
     {
         return $this->render('home/contact.html.twig');
+    }
+
+    /**
+     * Attribution for the Creative Commons photographs used on the site
+     * (the data lives in config/preview/fleet.json - see the
+     * photo_credits() Twig function).
+     */
+    #[Route('/credits', name: 'app_credits')]
+    public function credits(): Response
+    {
+        return $this->render('home/credits.html.twig');
     }
 }
