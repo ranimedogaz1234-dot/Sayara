@@ -54,6 +54,17 @@ Open <http://127.0.0.1:8000>. For e-mails in development, run a local catcher su
 
 Secrets belong in `.env.local` / real environment variables / [Symfony secrets](https://symfony.com/doc/current/configuration/secrets.html), never in committed files.
 
+## Production deployment
+
+`.env.example` is a **local development** template (see Installation above) and is deliberately left at `APP_ENV=dev` so `cp .env.example .env.local` keeps working for development. Use `.env.prod.example` as the reference for a real deployment instead — copy it to `.env.prod.local` (already covered by the `/.env.*.local` rule in `.gitignore`) or, preferably, set the same variables as real environment variables on your host. Never commit either file with real values.
+
+1. **`APP_ENV=prod`** and **`APP_DEBUG=0`**. `config/packages/web_profiler.yaml` and `config/packages/debug.yaml` only enable the profiler and debug toolbar `when@dev`, so with `APP_ENV=prod` they stay off and stack traces are not shown to visitors — but only if `APP_ENV` is actually `prod`. Symfony's Dotenv component defaults `APP_DEBUG` to `0` automatically whenever `APP_ENV=prod` (see `vendor/symfony/dotenv/Dotenv.php`, `bootEnv()`), so setting it explicitly is defense in depth, not strictly required.
+2. Install dependencies without the dev tooling: `composer install --no-dev --optimize-autoloader`.
+3. Set `APP_SECRET`, `DATABASE_URL` and `MAILER_DSN` to their real production values, by the method described above.
+4. Warm the cache for the production environment: `php bin/console cache:clear --env=prod --no-debug`.
+5. Run migrations against the production database: `php bin/console doctrine:migrations:migrate --no-interaction --env=prod`.
+6. Compile the mapped assets for serving: `php bin/console asset-map:compile --env=prod`.
+
 ## Security notes
 
 - Passwords are hashed with Symfony's `auto` hasher; forms and destructive actions use CSRF tokens.
