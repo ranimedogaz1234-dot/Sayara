@@ -21,11 +21,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # composer.json requires php: >=8.2; phpunit/phpunit ^12.5 (the
-        # version actually installed - see composer.lock) requires php
-        # >=8.3. 8.3 and 8.4 are both covered; 8.2 is not, since the
-        # installed PHPUnit cannot run there.
-        php-version: ['8.3', '8.4']
+        # composer.json's own constraint (php: >=8.2) would allow 8.3, but
+        # composer.lock's actually-locked versions do not: confirmed by
+        # running `composer install` under real PHP 8.3 (not assumed from
+        # the abstract constraint), which failed with doctrine/collections,
+        # doctrine/doctrine-bundle, doctrine/doctrine-migrations-bundle and
+        # doctrine/instantiator all locked to versions that require
+        # php ^8.4. This is a property of the current lock file, not of
+        # this workflow; re-locking those packages to php ^8.3-compatible
+        # versions (or not) is a decision for its own change, not this one.
+        # 8.4 is the only version this matrix can honestly claim to cover
+        # today - which also matches this project's own documented local
+        # dev environment.
+        php-version: ['8.4']
 
     # Secrets: nothing here is a real credential. Every value below is a
     # throwaway placeholder that exists only for this job's lifetime on an
