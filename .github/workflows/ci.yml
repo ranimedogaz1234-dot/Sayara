@@ -1,0 +1,109 @@
+name: CI
+
+# Runs on every push to main and on every pull request targeting main - not
+# on pushes to feature branches, so opening a PR is what first triggers CI
+# for in-progress work.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Read-only by default; nothing in this workflow needs to write to the
+# repository, open issues, or otherwise use elevated permissions.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # composer.json requires php: >=8.2; phpunit/phpunit ^12.5 (the
+        # version actually installed - see composer.lock) requires php
+        # >=8.3. 8.3 and 8.4 are both covered; 8.2 is not, since the
+        # installed PHPUnit cannot run there.
+        php-version: ['8.3', '8.4']
+
+    # Secrets: nothing here is a real credential. APP_SECRET and
+    # DATABASE_URL below are throwaway values that exist only for the
+    # lifetime of this job, on an ephemeral runner that is discarded
+    # afterwards, and are never used to protect anything real.
+    env:
+      APP_ENV: test
+      APP_SECRET: ci_placeholder_secret_0123456789abcdef0123456789abcdef
+      # Read by Symfony's Dotenv before the container exists, same as the
+      # project's own .env.example - NOT a live secret. In practice this
+      # value is not even the one that ends up in effect: whichever branch
+      # is checked out may have config/packages/doctrine.yaml's own
+      # when@test "url" (a literal config value, not read from this env
+      # var) take precedence and resolve to var/test.db instead - verified
+      # locally, both outcomes are an isolated SQLite file under var/. The
+      # actual safety guarantee is not this line or the schema-creation
+      # step below: every test suite in this project asserts its own
+      # resolved database path at runtime and refuses to run against
+      # anything other than an isolated var/test*.db file - the same
+      # protection that applies to every local run also applies here.
+      DATABASE_URL: "sqlite:///%kernel.project_dir%/var/ci_test.db"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: ctype, iconv, mbstring, intl, xml, dom, simplexml, tokenizer, xmlwriter, curl, zip, fileinfo, pdo_sqlite, sqlite3
+          coverage: none
+          tools: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ matrix.php-version }}-
+
+      - name: Validate composer.json / composer.lock
+        run: composer validate --no-check-publish
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: PHP syntax check (src/ and tests/)
+        run: |
+          set -e
+          status=0
+          while IFS= read -r -d '' file; do
+            php -l "$file" || status=1
+          done < <(find src tests -name '*.php' -print0)
+          exit $status
+
+      - name: Lint YAML configuration
+        run: php bin/console lint:yaml config --no-ansi
+
+      - name: Lint Twig templates
+        run: php bin/console lint:twig templates --no-ansi
+
+      - name: Lint the service container
+        run: php bin/console lint:container --no-ansi
+
+      # Builds the isolated SQLite schema fresh on this checkout - the file
+      # does not exist until this step creates it (var/ is gitignored, so a
+      # clean checkout never carries one over from a previous run or from
+      # anyone's local machine). Whichever path Symfony resolves for
+      # APP_ENV=test (see the DATABASE_URL comment above), this is the same
+      # resolution the test suite's own runtime check re-verifies before
+      # any fixture runs.
+      - name: Create the isolated test database schema
+        run: php bin/console doctrine:schema:create --env=test --no-interaction
+
+      - name: Run PHPUnit
+        run: php bin/phpunit
+
+      - name: Composer security audit
+        run: composer audit --no-interaction
