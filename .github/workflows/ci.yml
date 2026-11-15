@@ -27,10 +27,18 @@ jobs:
         # installed PHPUnit cannot run there.
         php-version: ['8.3', '8.4']
 
-    # Secrets: nothing here is a real credential. APP_SECRET and
-    # DATABASE_URL below are throwaway values that exist only for the
-    # lifetime of this job, on an ephemeral runner that is discarded
-    # afterwards, and are never used to protect anything real.
+    # Secrets: nothing here is a real credential. Every value below is a
+    # throwaway placeholder that exists only for this job's lifetime on an
+    # ephemeral runner discarded afterwards, and protects nothing real.
+    #
+    # This set was found by grepping every config/*.yaml for %env(...)%
+    # and reproducing a fresh checkout's composer install / console /
+    # phpunit runs in a disposable clone with none of these set, one
+    # command at a time, until each "Environment variable not found" error
+    # was resolved - not by guessing which ones a Symfony project
+    # "probably" needs. VAR_DUMPER_SERVER (debug.yaml) is excluded on
+    # purpose: it is scoped under when@dev, which APP_ENV=test never
+    # activates.
     env:
       APP_ENV: test
       APP_SECRET: ci_placeholder_secret_0123456789abcdef0123456789abcdef
@@ -47,6 +55,33 @@ jobs:
       # anything other than an isolated var/test*.db file - the same
       # protection that applies to every local run also applies here.
       DATABASE_URL: "sqlite:///%kernel.project_dir%/var/ci_test.db"
+      # config/packages/routing.yaml's default_uri - used by the router
+      # when generating absolute URLs outside an HTTP request (e.g. during
+      # cache:clear's cache warmup). Not reachable over the network from
+      # this job; the value only has to be syntactically a URL.
+      DEFAULT_URI: "http://localhost"
+      # config/packages/messenger.yaml's transport DSN. "sync://" runs any
+      # dispatched message immediately, in-process, instead of needing a
+      # real queue or the Doctrine-backed transport this project's own
+      # .env configures for local development.
+      MESSENGER_TRANSPORT_DSN: "sync://"
+      # config/packages/mailer.yaml's DSN. PaymentController wraps its
+      # mail send in try/catch specifically so a delivery failure never
+      # blocks the confirmation flow (see tests/Reservation/
+      # ReservationStatusPaymentTest.php), so none of this project's own
+      # tests need mail to actually be deliverable. "null://null"
+      # discards anything sent without attempting a real connection,
+      # which smtp://localhost:1025 (this project's own local-dev value,
+      # for a Mailpit catcher that does not exist on this runner) would
+      # otherwise attempt and fail or hang on.
+      MAILER_DSN: "null://null"
+      # .env.test (also gitignored - same reasoning as bare .env, see
+      # above) sets this for local test runs. KernelTestCase itself
+      # throws a LogicException without it ("You must set the
+      # KERNEL_CLASS environment variable..."); unlike the other
+      # variables here it is not read through a %env(...)% in config,
+      # but checked directly by Symfony's test harness.
+      KERNEL_CLASS: "App\\Kernel"
 
     steps:
       - name: Checkout
