@@ -1,60 +1,46 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Sign in{% endblock %}
 
 {% block body %}
-<div class="cr-auth-wrap">
-    <div class="container">
-        <div class="cr-auth-card cr-reveal cr-visible">
-            <div class="text-center mb-4">
-                <i class="fas fa-car fa-2x mb-2" style="color: var(--cr-gray-300);"></i>
-                <h2 class="font-weight-bold mb-0">Welcome Back</h2>
-                <p class="text-muted small">Sign in to manage your bookings</p>
-            </div>
-
-            <div class="cr-panel cr-panel-body">
-                {% if error %}
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </div>
-                {% endif %}
-
-                <form action="{{ path('app_login') }}" method="post">
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" class="form-control cr-input"
-                               name="username" value="{{ last_username }}"
-                               placeholder="Your username"
-                               autocomplete="username" required autofocus>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" class="form-control cr-input"
-                               name="password" placeholder="Your password"
-                               autocomplete="current-password" required>
-                    </div>
-
-                    <div class="form-group d-flex align-items-center justify-content-between mb-4">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
-                            <label class="custom-control-label small" for="rememberMe" style="color: var(--cr-gray-300);">Remember me</label>
-                        </div>
-                    </div>
-
-                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                    <button type="submit" class="btn-cr-primary w-100">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
-                    </button>
-                </form>
-            </div>
-
-            <p class="text-center small mt-3" style="color: var(--cr-gray-300);">
-                Don't have an account? <a href="{{ path('app_signup') }}" class="font-weight-bold text-white">Register</a>
-            </p>
+<div class="lx-auth">
+    <aside class="lx-auth__visual" aria-hidden="true">
+        <img src="{{ asset('images/hero-phantom.jpg') }}" alt="">
+        <div class="lx-auth__quote">
+            <span class="eyebrow eyebrow--rule">CarRent</span>
+            <p>Your next drive is <em>already waiting</em>.</p>
         </div>
-    </div>
+    </aside>
+
+    <section class="lx-auth__panel">
+        <div class="lx-auth__form cr-reveal cr-visible">
+            <span class="eyebrow eyebrow--rule">Welcome back</span>
+            <h1 class="display">Sign <em>in</em></h1>
+            <p class="lede mb-5">Access your bookings and reserve your next car.</p>
+
+            {% if error %}
+                <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <form action="{{ path('app_login') }}" method="post">
+                <div class="form-group lx-field">
+                    <label for="username">Username</label>
+                    <input type="text" class="lx-input" id="username" name="username" value="{{ last_username }}" autocomplete="username" required autofocus>
+                </div>
+                <div class="form-group lx-field">
+                    <label for="password">Password</label>
+                    <input type="password" class="lx-input" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <div class="custom-control custom-checkbox mb-5">
+                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
+                    <label class="custom-control-label" for="rememberMe">Keep me signed in</label>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn-lx btn-lx--gold btn-lx--block">Sign in</button>
+            </form>
+
+            <p class="lx-auth__switch">New to CarRent? <a href="{{ path('app_signup') }}">Create an account</a></p>
+        </div>
+    </section>
 </div>
 {% endblock %}

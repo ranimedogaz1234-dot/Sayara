@@ -1,0 +1,40 @@
+{# Shared by reservation/new.html.twig and reservation/edit.html.twig.
+   Expects: form, submit_label, cancel_path. Field names and the admin-only
+   client selector are unchanged from the original templates. #}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'reservationForm'}}) }}
+    {% if is_granted('ROLE_ADMIN') and form.client is defined %}
+        <div class="form-group lx-field">
+            {{ form_label(form.client, 'Client') }}
+            {{ form_widget(form.client, {'attr': {'class': 'lx-input'}}) }}
+            {{ form_errors(form.client) }}
+        </div>
+    {% endif %}
+    <div class="form-group lx-field">
+        {{ form_label(form.voiture, 'Car') }}
+        {{ form_widget(form.voiture, {'attr': {'class': 'lx-input'}}) }}
+        {{ form_errors(form.voiture) }}
+    </div>
+    <div class="row">
+        <div class="col-md-6 form-group lx-field">
+            {{ form_label(form.dateDebut, 'Pick-up date') }}
+            {{ form_widget(form.dateDebut, {'attr': {'class': 'lx-input'}}) }}
+            {{ form_errors(form.dateDebut) }}
+        </div>
+        <div class="col-md-6 form-group lx-field">
+            {{ form_label(form.dateFin, 'Return date') }}
+            {{ form_widget(form.dateFin, {'attr': {'class': 'lx-input'}}) }}
+            {{ form_errors(form.dateFin) }}
+        </div>
+    </div>
+
+    <div class="lx-book mb-4" id="pricePreview" style="display:none;">
+        <span class="eyebrow d-block mb-3">Estimated total</span>
+        <div class="lx-price" style="font-size:34px;"><span id="estimatedPrice">0</span> DT</div>
+        <p class="meta mt-3 mb-0"><span id="numDays">0</span> days &times; <span id="pricePerDay">0</span> DT per day &middot; final amount confirmed on save</p>
+    </div>
+
+    <div class="d-flex justify-content-between flex-wrap" style="gap:12px;">
+        <a href="{{ cancel_path }}" class="btn-lx btn-lx--outline">Cancel</a>
+        <button type="submit" class="btn-lx btn-lx--gold">{{ submit_label }}</button>
+    </div>
+{{ form_end(form) }}

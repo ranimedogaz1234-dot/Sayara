@@ -1,58 +1,27 @@
 {% extends 'base_public.html.twig' %}
-{% block title %}Edit Booking #{{ reservation.id }}{% endblock %}
+
+{% block title %}Edit booking #{{ '%04d'|format(reservation.id) }}{% endblock %}
+
 {% block body %}
-<section class="cr-section pt-5">
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Booking #' ~ '%04d'|format(reservation.id),
+    title: 'Edit',
+    em: 'booking',
+    lede: 'The total is recalculated from the new dates and the car\'s daily rate.',
+    compact: true,
+} %}
+
+<section class="lx-section--tight">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-between mb-4 cr-reveal cr-visible flex-wrap">
-            <h1 class="h3 mb-0 font-weight-bold">Edit Booking #{{ reservation.id }}</h1>
-            <a href="{{ path('app_reservation_index') }}" class="btn-cr-outline"><i class="fas fa-arrow-left mr-1"></i>Back</a>
-        </div>
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="cr-panel cr-panel-body cr-reveal cr-visible">
-                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <div class="form-group">
-                        <label style="color: var(--cr-gray-300);"><i class="fas fa-user mr-1"></i> Client</label>
-                        {{ form_widget(form.client, {'attr': {'class': 'form-control cr-input'}}) }}
-                        {{ form_errors(form.client) }}
-                    </div>
-                    {% endif %}
-
-                    <div class="form-group">
-                        <label style="color: var(--cr-gray-300);"><i class="fas fa-car mr-1"></i> Vehicle</label>
-                        {{ form_widget(form.voiture, {'attr': {'class': 'form-control cr-input'}}) }}
-                        {{ form_errors(form.voiture) }}
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label style="color: var(--cr-gray-300);"><i class="fas fa-calendar-day mr-1"></i> Pick-up Date</label>
-                                {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control cr-input'}}) }}
-                                {{ form_errors(form.dateDebut) }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label style="color: var(--cr-gray-300);"><i class="fas fa-calendar-day mr-1"></i> Return Date</label>
-                                {{ form_widget(form.dateFin, {'attr': {'class': 'form-control cr-input'}}) }}
-                                {{ form_errors(form.dateFin) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        The total price will be recalculated automatically from the dates and the vehicle's daily rate.
-                    </div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{{ path('app_reservation_index') }}" class="btn-cr-outline">Cancel</a>
-                        <button type="submit" class="btn-cr-primary">Save Changes</button>
-                    </div>
-                    {{ form_end(form) }}
-                </div>
+            <div class="col-lg-7">
+                <div class="cr-panel cr-reveal cr-visible"><div class="cr-panel-body">
+                    {% include 'reservation/_booking_form.html.twig' with {submit_label: 'Save changes', cancel_path: path('app_reservation_show', {id: reservation.id})} %}
+                </div></div>
             </div>
         </div>
     </div>
 </section>
 {% endblock %}
+
+{% block javascripts %}{% include 'reservation/_price_preview.html.twig' %}{% endblock %}

@@ -1,55 +1,49 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create an account{% endblock %}
 
 {% block body %}
-<div class="cr-auth-wrap">
-    <div class="container">
-        <div class="cr-auth-card cr-reveal cr-visible">
-            <div class="text-center mb-4">
-                <i class="fas fa-car fa-2x mb-2" style="color: var(--cr-gray-300);"></i>
-                <h2 class="font-weight-bold mb-0">Create Your Account</h2>
-                <p class="text-muted small">Join CarRent to start booking</p>
-            </div>
+<div class="lx-auth">
+    <aside class="lx-auth__visual" aria-hidden="true">
+        <img src="{{ asset('images/hero-phantom.jpg') }}" alt="">
+        <div class="lx-auth__quote">
+            <span class="eyebrow eyebrow--rule">CarRent</span>
+            <p>Exceptional cars, <em>simply rented</em>.</p>
+        </div>
+    </aside>
 
-            <div class="cr-panel cr-panel-body">
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <section class="lx-auth__panel">
+        <div class="lx-auth__form cr-reveal cr-visible">
+            <span class="eyebrow eyebrow--rule">Join CarRent</span>
+            <h1 class="display">Create an <em>account</em></h1>
+            <p class="lede mb-5">One account for every booking you make.</p>
 
-                <div class="form-group">
-                    <label>Username</label>
-                    {{ form_widget(form.username, {'attr': {'class': 'form-control cr-input', 'placeholder': 'Choose a username...'}}) }}
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <div class="form-group lx-field">
+                    {{ form_label(form.username, 'Username') }}
+                    {{ form_widget(form.username, {'attr': {'class': 'lx-input', 'autocomplete': 'username'}}) }}
                     {{ form_errors(form.username) }}
                 </div>
-
-                <div class="form-group">
-                    <label>Full Name</label>
-                    {{ form_widget(form.nom, {'attr': {'class': 'form-control cr-input', 'placeholder': 'Your full name...'}}) }}
+                <div class="form-group lx-field">
+                    {{ form_label(form.nom, 'Full name') }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'lx-input', 'autocomplete': 'name'}}) }}
                     {{ form_errors(form.nom) }}
                 </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    {{ form_widget(form.email, {'attr': {'class': 'form-control cr-input', 'placeholder': 'you@example.com', 'type': 'email'}}) }}
+                <div class="form-group lx-field">
+                    {{ form_label(form.email, 'Email') }}
+                    {{ form_widget(form.email, {'attr': {'class': 'lx-input', 'autocomplete': 'email'}}) }}
                     {{ form_errors(form.email) }}
                 </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    {{ form_widget(form.password, {'attr': {'class': 'form-control cr-input', 'placeholder': 'At least 8 characters...'}}) }}
+                <div class="form-group lx-field">
+                    {{ form_label(form.password, 'Password') }}
+                    {{ form_widget(form.password, {'attr': {'class': 'lx-input', 'autocomplete': 'new-password', 'placeholder': 'At least 8 characters'}}) }}
                     {{ form_errors(form.password) }}
                 </div>
+                <button type="submit" class="btn-lx btn-lx--gold btn-lx--block mt-2">Create account</button>
+            {{ form_end(form) }}
 
-                <button type="submit" class="btn-cr-primary w-100 mt-3">
-                    <i class="fas fa-user-plus mr-2"></i>Create Account
-                </button>
-
-                {{ form_end(form) }}
-            </div>
-
-            <p class="text-center small mt-3" style="color: var(--cr-gray-300);">
-                Already have an account? <a href="{{ path('app_login') }}" class="font-weight-bold text-white">Sign in</a>
-            </p>
+            <p class="lx-auth__switch">Already have an account? <a href="{{ path('app_login') }}">Sign in</a></p>
         </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

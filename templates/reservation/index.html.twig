@@ -1,94 +1,85 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}My Bookings{% endblock %}
+{% block title %}{{ is_granted('ROLE_ADMIN') ? 'All reservations' : 'My bookings' }}{% endblock %}
 
 {% block body %}
-<section class="cr-section pt-5">
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: is_granted('ROLE_ADMIN') ? 'Administration' : 'My account',
+    title: is_granted('ROLE_ADMIN') ? 'All' : 'My',
+    em: is_granted('ROLE_ADMIN') ? 'reservations' : 'bookings',
+    lede: reservations|length ~ (reservations|length == 1 ? ' booking' : ' bookings') ~ (is_granted('ROLE_ADMIN') ? ' across all clients.' : ' on your account.'),
+    compact: true,
+} %}
+
+<section class="lx-section--tight">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-between mb-4 cr-reveal cr-visible flex-wrap">
-            <h1 class="h3 mb-0 font-weight-bold">
-                {{ is_granted('ROLE_ADMIN') ? 'All Reservations' : 'My Bookings' }}
-            </h1>
-            <a href="{{ path('app_reservation_new') }}" class="btn-cr-primary"><i class="fas fa-plus-circle mr-1"></i>New Booking</a>
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ path('app_reservation_new') }}" class="btn-lx btn-lx--gold btn-lx--sm">New booking</a>
         </div>
-
         <div class="cr-panel cr-reveal cr-visible">
-            <div class="cr-panel-header">
-                Reservations <span class="cr-pill cr-pill-pending ml-1">{{ reservations|length }}</span>
-            </div>
-            <div class="cr-panel-body">
-                {% if reservations|length == 0 %}
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-calendar-times fa-3x mb-3 opacity-50"></i>
-                        <p>No reservations yet.</p>
-                        <a href="{{ path('app_reservation_new') }}" class="btn-cr-primary mt-2">Create your first booking</a>
-                    </div>
-                {% else %}
-                    <div class="table-responsive">
-                        <table class="cr-table table" width="100%">
-                            <thead>
+            {% if reservations|length == 0 %}
+                <div class="cr-panel-body text-center py-5">
+                    <p class="title mb-4" style="font-size:1.8rem;">No bookings <em>yet</em></p>
+                    <a href="{{ path('app_catalog') }}" class="btn-lx btn-lx--outline">Explore the fleet</a>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="cr-table cr-table--stack">
+                        <thead>
+                        <tr>
+                            <th>Ref.</th>
+                            {% if is_granted('ROLE_ADMIN') %}<th>Client</th>{% endif %}
+                            <th>Car</th><th>Dates</th><th>Total</th><th>Status</th><th class="text-right">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for reservation in reservations %}
                             <tr>
-                                <th>#</th>
-                                {% if is_granted('ROLE_ADMIN') %}<th>Client</th>{% endif %}
-                                <th>Vehicle</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th class="text-right">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for reservation in reservations %}
-                                <tr>
-                                    <td>{{ reservation.id }}</td>
-                                    {% if is_granted('ROLE_ADMIN') %}<td>{{ reservation.client.nom }}</td>{% endif %}
-                                    <td>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</td>
-                                    <td>{{ reservation.dateDebut|date('d/m/Y') }}</td>
-                                    <td>{{ reservation.dateFin|date('d/m/Y') }}</td>
-                                    <td>{{ reservation.prixTotal }} DT</td>
-                                    <td>
-                                        {% if reservation.statut == 'confirmed' %}
-                                            <span class="cr-pill cr-pill-confirmed">Confirmed</span>
-                                        {% else %}
-                                            <span class="cr-pill cr-pill-pending">Pending</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-right">
-                                        <a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="btn-cr-outline" style="padding:.3rem .7rem;font-size:.75rem;" title="View"><i class="fas fa-eye"></i></a>
-                                        <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}" class="btn-cr-outline" style="padding:.3rem .7rem;font-size:.75rem;" title="Edit"><i class="fas fa-edit"></i></a>
-                                        <button type="button" class="btn-cr-danger" style="padding:.3rem .7rem;font-size:.75rem;" title="Delete" data-toggle="modal" data-target="#deleteModal{{ reservation.id }}"><i class="fas fa-trash"></i></button>
+                                <td data-label="Ref." class="meta" style="color:var(--gold);">#{{ '%04d'|format(reservation.id) }}</td>
+                                {% if is_granted('ROLE_ADMIN') %}<td data-label="Client">{{ reservation.client.nom }}</td>{% endif %}
+                                <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
+                                <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
+                                <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|number_format(0, '.', ' ') }} DT</td>
+                                <td data-label="Status">
+                                    {% if reservation.statut == 'confirmed' %}
+                                        <span class="cr-pill cr-pill-confirmed">Confirmed</span>
+                                    {% else %}
+                                        <span class="cr-pill cr-pill-pending">Awaiting payment</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right cr-table__actions" style="white-space:nowrap;">
+                                    <a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="link-lx mr-3" style="padding-bottom:4px;">View</a>
+                                    <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}" class="link-lx mr-3" style="padding-bottom:4px;">Edit</a>
+                                    <button type="button" class="link-lx" style="background:none;border-top:0;border-left:0;border-right:0;padding:0 0 4px;color:var(--warn);cursor:pointer;" data-toggle="modal" data-target="#deleteModal{{ reservation.id }}">Cancel</button>
 
-                                        <div class="modal fade" id="deleteModal{{ reservation.id }}" tabindex="-1" role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content" style="background: var(--cr-black-card); border: 1px solid var(--cr-border); color: #fff;">
-                                                    <div class="modal-header" style="border-color: var(--cr-border);">
-                                                        <h5 class="modal-title">Confirm deletion</h5>
-                                                        <button class="close text-white" type="button" data-dismiss="modal"><span>&times;</span></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Delete reservation #{{ reservation.id }}
-                                                        {% if is_granted('ROLE_ADMIN') %}for <strong>{{ reservation.client.nom }}</strong>{% endif %}?
-                                                    </div>
-                                                    <div class="modal-footer" style="border-color: var(--cr-border);">
-                                                        <button class="btn-cr-outline" type="button" data-dismiss="modal">Cancel</button>
-                                                        <form method="post" action="{{ path('app_reservation_delete', {id: reservation.id}) }}" style="display:inline">
-                                                            <input type="hidden" name="_method" value="DELETE">
-                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
-                                                            <button class="btn-cr-danger" type="submit">Delete</button>
-                                                        </form>
-                                                    </div>
+                                    <div class="modal fade text-left" id="deleteModal{{ reservation.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteTitle{{ reservation.id }}">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteTitle{{ reservation.id }}">Cancel booking #{{ '%04d'|format(reservation.id) }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                                                </div>
+                                                <div class="modal-body" style="white-space:normal;">
+                                                    {{ reservation.voiture.marque }} {{ reservation.voiture.modele }}, {{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}{% if is_granted('ROLE_ADMIN') %}, for {{ reservation.client.nom }}{% endif %}. This cannot be undone.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn-lx btn-lx--outline btn-lx--sm" type="button" data-dismiss="modal">Keep it</button>
+                                                    <form method="post" action="{{ path('app_reservation_delete', {id: reservation.id}) }}" style="display:inline">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                                                        <button class="btn-cr-danger btn-lx--sm" type="submit">Cancel booking</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-            </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>

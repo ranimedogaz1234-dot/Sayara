@@ -1,30 +1,30 @@
 {% extends 'base_public.html.twig' %}
 
-{% block title %}My Account{% endblock %}
+{% block title %}My account{% endblock %}
 
 {% block body %}
-<section class="cr-section pt-5">
-    <div class="container">
-        <div class="d-flex align-items-center justify-content-between mb-4 cr-reveal cr-visible flex-wrap">
-            <h1 class="h3 mb-0 font-weight-bold">My Account</h1>
-            <a href="{{ path('app_home') }}" class="btn-cr-outline"><i class="fas fa-arrow-left mr-1"></i>Back Home</a>
-        </div>
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'My account',
+    title: 'Welcome,',
+    em: app.user.nom,
+    lede: 'Your details and every booking you have made, in one place.',
+    compact: true,
+} %}
 
+<section class="lx-section--tight">
+    <div class="container">
         <div class="row">
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-4 mb-5 mb-lg-0">
                 <div class="cr-panel cr-reveal cr-visible">
-                    <div class="cr-panel-body text-center">
-                        <img class="rounded-circle mb-3" width="80" height="80"
-                             src="https://ui-avatars.com/api/?name={{ app.user.nom }}&background=1a1a1a&color=fff&size=200">
-                        <h5 class="font-weight-bold mb-1">{{ app.user.nom }}</h5>
-                        <p class="text-muted small mb-3">{{ app.user.email }}</p>
-                        <table class="cr-table w-100 text-left mb-3">
-                            <tr><th class="pb-2">Username</th><td class="pb-2 text-right">{{ app.user.username }}</td></tr>
-                        </table>
-                        <div class="d-flex" style="gap:.5rem;">
-                            <a href="{{ path('app_profile_edit') }}" class="btn-cr-outline flex-grow-1">Edit Profile</a>
-                            <a href="#" data-toggle="modal" data-target="#crLogoutModal" class="btn-cr-danger flex-grow-1">Logout</a>
-                        </div>
+                    <div class="cr-panel-header">Profile</div>
+                    <div class="cr-panel-body">
+                        <dl class="lx-specs mt-0 mb-4">
+                            <div><dt>Name</dt><dd>{{ app.user.nom }}</dd></div>
+                            <div><dt>Username</dt><dd>{{ app.user.username }}</dd></div>
+                            <div><dt>Email</dt><dd style="font-family:var(--sans);font-size:14px;word-break:break-all;">{{ app.user.email }}</dd></div>
+                        </dl>
+                        <a href="{{ path('app_profile_edit') }}" class="btn-lx btn-lx--outline btn-lx--block mb-3">Edit profile</a>
+                        <a href="#" data-toggle="modal" data-target="#crLogoutModal" class="btn-cr-danger btn-lx--block">Sign out</a>
                     </div>
                 </div>
             </div>
@@ -32,40 +32,32 @@
             <div class="col-lg-8">
                 <div class="cr-panel cr-reveal cr-visible">
                     <div class="cr-panel-header d-flex align-items-center justify-content-between">
-                        <span><i class="fas fa-calendar-alt mr-2"></i>My Bookings <span class="cr-pill cr-pill-pending ml-1">{{ reservations|length }}</span></span>
-                        <a href="{{ path('app_reservation_new') }}" class="btn-cr-outline" style="padding:.4rem 1rem;font-size:.8rem;">New Booking</a>
+                        <span>My bookings &middot; {{ '%02d'|format(reservations|length) }}</span>
+                        <a href="{{ path('app_catalog') }}" class="link-lx" style="padding-bottom:4px;">Book a car <span class="arrow">&rarr;</span></a>
                     </div>
-                    <div class="cr-panel-body">
-                        {% if reservations|length == 0 %}
-                            <div class="text-center py-5 text-muted">
-                                <i class="fas fa-calendar-times fa-3x mb-3 opacity-50"></i>
-                                <p>No bookings yet.</p>
-                                <a href="{{ path('app_reservation_new') }}" class="btn-cr-primary mt-2">Create a booking</a>
-                            </div>
-                        {% else %}
-                            <div class="table-responsive">
-                                <table class="cr-table table" width="100%">
-                                    <thead>
-                                    <tr><th>#</th><th>Vehicle</th><th>From</th><th>To</th><th>Total</th><th></th></tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for reservation in reservations %}
-                                        <tr>
-                                            <td>{{ reservation.id }}</td>
-                                            <td>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</td>
-                                            <td>{{ reservation.dateDebut|date('d/m/Y') }}</td>
-                                            <td>{{ reservation.dateFin|date('d/m/Y') }}</td>
-                                            <td>{{ reservation.prixTotal }} DT</td>
-                                            <td class="text-right">
-                                                <a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="btn-cr-outline" style="padding:.3rem .8rem;font-size:.78rem;">View</a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% endif %}
-                    </div>
+                    {% if reservations|length == 0 %}
+                        <div class="cr-panel-body text-center py-5">
+                            <p class="title mb-4" style="font-size:1.8rem;">No bookings <em>yet</em></p>
+                            <a href="{{ path('app_catalog') }}" class="btn-lx btn-lx--gold">Explore the fleet</a>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="cr-table cr-table--stack">
+                                <thead><tr><th>Ref.</th><th>Car</th><th>Dates</th><th>Total</th><th></th></tr></thead>
+                                <tbody>
+                                {% for reservation in reservations %}
+                                    <tr>
+                                        <td data-label="Ref." class="meta" style="color:var(--gold);">#{{ '%04d'|format(reservation.id) }}</td>
+                                        <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
+                                        <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
+                                        <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|number_format(0, '.', ' ') }} DT</td>
+                                        <td class="text-right cr-table__actions"><a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="link-lx" style="padding-bottom:4px;">View <span class="arrow">&rarr;</span></a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

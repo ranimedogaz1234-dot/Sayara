@@ -1,44 +1,47 @@
 {% extends 'base_public.html.twig' %}
-{% block title %}Booking #{{ reservation.id }}{% endblock %}
+
+{% block title %}Booking #{{ '%04d'|format(reservation.id) }}{% endblock %}
+
 {% block body %}
-<section class="cr-section pt-5">
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Booking #' ~ '%04d'|format(reservation.id),
+    title: reservation.voiture.marque,
+    em: reservation.voiture.modele,
+    compact: true,
+} %}
+
+<section class="lx-section--tight">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-between mb-4 cr-reveal cr-visible flex-wrap">
-            <h1 class="h3 mb-0 font-weight-bold">Booking #{{ reservation.id }}</h1>
-            <a href="{{ path('app_reservation_index') }}" class="btn-cr-outline"><i class="fas fa-arrow-left mr-1"></i>Back</a>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="cr-panel cr-panel-body cr-reveal cr-visible">
-                    <table class="cr-table table">
-                        <tr><th><i class="fas fa-user mr-2"></i>Client</th><td>{{ reservation.client.nom }}</td></tr>
-                        <tr><th><i class="fas fa-car mr-2"></i>Vehicle</th><td>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</td></tr>
-                        <tr><th><i class="fas fa-calendar-day mr-2"></i>Pick-up</th><td>{{ reservation.dateDebut|date('d/m/Y') }}</td></tr>
-                        <tr><th><i class="fas fa-calendar-day mr-2"></i>Return</th><td>{{ reservation.dateFin|date('d/m/Y') }}</td></tr>
-                        <tr><th><i class="fas fa-money-bill-wave mr-2"></i>Total</th><td><strong>{{ reservation.prixTotal }} DT</strong></td></tr>
-                        <tr>
-                            <th><i class="fas fa-info-circle mr-2"></i>Status</th>
-                            <td>
-                                {% if reservation.statut == 'confirmed' %}
-                                    <span class="cr-pill cr-pill-confirmed">Confirmed &amp; Paid</span>
-                                {% else %}
-                                    <span class="cr-pill cr-pill-pending">Pending Payment</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
-                    <hr style="border-color: var(--cr-border);">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:.6rem;">
-                        <a href="{{ path('app_reservation_index') }}" class="btn-cr-outline">Back</a>
-                        <div class="d-flex flex-wrap" style="gap:.6rem;">
-                            {% if not is_granted('ROLE_ADMIN') and reservation.statut != 'confirmed' %}
-                                <a href="{{ path('app_payment_checkout', {id: reservation.id}) }}" class="btn-cr-primary">
-                                    <i class="fas fa-credit-card mr-1"></i>Proceed to Payment
-                                </a>
-                            {% endif %}
-                            <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}" class="btn-cr-outline">Edit</a>
-                        </div>
+        <div class="row">
+            <div class="col-lg-7 mb-5 mb-lg-0">
+                <div class="cr-panel cr-reveal cr-visible">
+                    <div class="cr-panel-header">Details</div>
+                    <div class="cr-panel-body">
+                        <dl class="lx-specs m-0">
+                            <div><dt>Client</dt><dd>{{ reservation.client.nom }}</dd></div>
+                            <div><dt>Car</dt><dd>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</dd></div>
+                            <div><dt>Pick-up</dt><dd>{{ reservation.dateDebut|date('l d F Y') }}</dd></div>
+                            <div><dt>Return</dt><dd>{{ reservation.dateFin|date('l d F Y') }}</dd></div>
+                            <div><dt>Total</dt><dd>{{ reservation.prixTotal|number_format(2, '.', ' ') }} DT</dd></div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>{% if reservation.statut == 'confirmed' %}<span class="cr-pill cr-pill-confirmed">Confirmed &amp; paid</span>{% else %}<span class="cr-pill cr-pill-pending">Awaiting payment</span>{% endif %}</dd>
+                            </div>
+                        </dl>
                     </div>
+                </div>
+            </div>
+            <div class="col-lg-4 offset-lg-1">
+                <div class="lx-book cr-reveal cr-visible">
+                    <span class="eyebrow d-block mb-4">Next step</span>
+                    {% if not is_granted('ROLE_ADMIN') and reservation.statut != 'confirmed' %}
+                        <p style="color:var(--ivory-70);">Complete the (simulated) payment to confirm this booking.</p>
+                        <a href="{{ path('app_payment_checkout', {id: reservation.id}) }}" class="btn-lx btn-lx--gold btn-lx--block mb-3">Proceed to payment</a>
+                    {% else %}
+                        <p style="color:var(--ivory-70);">{{ reservation.statut == 'confirmed' ? 'This booking is confirmed.' : 'Payment is completed by the client.' }}</p>
+                    {% endif %}
+                    <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}" class="btn-lx btn-lx--outline btn-lx--block mb-3">Edit booking</a>
+                    <a href="{{ path('app_reservation_index') }}" class="link-lx mt-2">All bookings <span class="arrow">&rarr;</span></a>
                 </div>
             </div>
         </div>
