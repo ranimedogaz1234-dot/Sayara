@@ -16,6 +16,57 @@ class VoitureRepository extends ServiceEntityRepository
         parent::__construct($registry, Voiture::class);
     }
 
+    /**
+     * Distinct brand names currently present in the catalog, used to build
+     * the "Our Luxury Brands" section and the catalog brand filter from
+     * real data only - never a hardcoded list of brand names that might
+     * not actually be in the database.
+     *
+     * @return string[]
+     */
+    public function findDistinctBrands(): array
+    {
+        $rows = $this->createQueryBuilder('v')
+            ->select('DISTINCT v.marque')
+            ->orderBy('v.marque', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($rows, 'marque');
+    }
+
+    /**
+     * Available vehicles (disponible = true), optionally filtered by brand
+     * and/or a free-text search across brand and model, and sorted by one
+     * of a fixed set of real columns. Everything here maps to an actual
+     * Voiture field - no fabricated attributes.
+     *
+     * @return Voiture[]
+     */
+    public function searchAvailable(?string $brand, ?string $query, string $sort): array
+    {
+        $qb = $this->createQueryBuilder('v')
+            ->where('v.disponible = :dispo')
+            ->setParameter('dispo', true);
+
+        if ($brand) {
+            $qb->andWhere('v.marque = :brand')->setParameter('brand', $brand);
+        }
+
+        if ($query) {
+            $qb->andWhere('v.marque LIKE :q OR v.modele LIKE :q')
+                ->setParameter('q', '%'.$query.'%');
+        }
+
+        match ($sort) {
+            'price_desc' => $qb->orderBy('v.prixParJour', 'DESC'),
+            'name' => $qb->orderBy('v.marque', 'ASC')->addOrderBy('v.modele', 'ASC'),
+            default => $qb->orderBy('v.prixParJour', 'ASC'),
+        };
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Voiture[] Returns an array of Voiture objects
 //     */

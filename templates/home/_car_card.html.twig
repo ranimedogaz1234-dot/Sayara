@@ -1,0 +1,30 @@
+{# Reused by home/index.html.twig and home/catalog.html.twig.
+   Expects: voiture, and optionally pickupDate / returnDate (carried from
+   the search bar into the "Book Now" link). #}
+<div class="cr-card cr-reveal">
+    <div class="cr-card-media">
+        {% if voiture.image %}
+            <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" loading="lazy">
+        {% else %}
+            <i class="fas fa-car-side"></i>
+        {% endif %}
+        {% if voiture.disponible %}
+            <span class="cr-badge-status cr-badge-available">Available</span>
+        {% else %}
+            <span class="cr-badge-status cr-badge-unavailable">Unavailable</span>
+        {% endif %}
+    </div>
+    <div class="cr-card-body">
+        <h5>{{ voiture.marque }}</h5>
+        <div class="cr-model">{{ voiture.modele }}</div>
+        <div class="cr-card-price">{{ voiture.prixParJour }} DT <small>/ day</small></div>
+        <div class="cr-card-actions">
+            <a href="{{ path('app_catalog_show', {id: voiture.id}) }}" class="btn-cr-outline">View Details</a>
+            {% if voiture.disponible %}
+                <a href="{{ path('app_reservation_new', {voiture: voiture.id, pickupDate: pickupDate|default(null), returnDate: returnDate|default(null)}) }}" class="btn-cr-primary">Book Now</a>
+            {% else %}
+                <span class="btn-cr-outline" style="opacity:.5;pointer-events:none;">Unavailable</span>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Reservation;
 use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
+use App\Repository\VoitureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +42,7 @@ final class ReservationController extends AbstractController
     }
 
     #[Route('/new', name: 'app_reservation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, VoitureRepository $voitureRepository): Response
     {
         $reservation = new Reservation();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
@@ -49,6 +50,30 @@ final class ReservationController extends AbstractController
         // Auto-populate with logged-in user only for non-admins
         if (!$isAdmin) {
             $reservation->setClient($this->getUser());
+        }
+
+        // Pre-fill from the "Book Now" link on the catalog/vehicle pages
+        // (?voiture=ID&pickupDate=...&returnDate=...). GET-only: this never
+        // runs on the POST submission below, so it cannot override or
+        // bypass anything the form itself validates.
+        if (!$request->isMethod('POST')) {
+            $voitureId = $request->query->get('voiture');
+            if ($voitureId && $voiture = $voitureRepository->find($voitureId)) {
+                if ($voiture->isDisponible()) {
+                    $reservation->setVoiture($voiture);
+                }
+            }
+            foreach (['pickupDate' => 'setDateDebut', 'returnDate' => 'setDateFin'] as $param => $setter) {
+                $value = $request->query->get($param);
+                if ($value) {
+                    try {
+                        $reservation->{$setter}(new \DateTime($value));
+                    } catch (\Exception) {
+                        // Ignore an unparsable date - the form's own
+                        // validation constraints are the real gate here.
+                    }
+                }
+            }
         }
 
         $form = $this->createForm(ReservationType::class, $reservation, [

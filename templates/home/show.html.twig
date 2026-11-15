@@ -1,0 +1,57 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}{{ voiture.marque }} {{ voiture.modele }}{% endblock %}
+
+{% block body %}
+<section class="cr-section pt-5">
+    <div class="container">
+        <a href="{{ path('app_catalog') }}" class="btn-cr-outline mb-4 d-inline-block cr-reveal cr-visible">
+            <i class="fas fa-arrow-left mr-1"></i> Back to fleet
+        </a>
+
+        <div class="row cr-reveal cr-visible">
+            <div class="col-lg-7 mb-4">
+                <div class="cr-panel" style="overflow:hidden;">
+                    {% if voiture.image %}
+                        <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="w-100" style="display:block; max-height:460px; object-fit:cover;">
+                    {% else %}
+                        <div class="cr-stage-fallback" style="width:100%;height:360px;border-radius:0;">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="cr-panel cr-panel-body h-100 d-flex flex-column">
+                    <h1 class="h2 font-weight-bold mb-1">{{ voiture.marque }}</h1>
+                    <p class="text-muted mb-3">{{ voiture.modele }}</p>
+
+                    {% if voiture.disponible %}
+                        <span class="cr-pill cr-pill-confirmed mb-4" style="align-self:flex-start;"><i class="fas fa-check-circle mr-1"></i>Available</span>
+                    {% else %}
+                        <span class="cr-pill cr-pill-pending mb-4" style="align-self:flex-start;background:rgba(231,76,60,.15);color:var(--cr-danger);border-color:rgba(231,76,60,.4);"><i class="fas fa-times-circle mr-1"></i>Currently unavailable</span>
+                    {% endif %}
+
+                    <div class="cr-card-price mb-4">{{ voiture.prixParJour }} DT <small>/ day</small></div>
+
+                    <ul class="list-unstyled mb-4" style="color: var(--cr-gray-300);">
+                        <li class="mb-2"><i class="fas fa-tag mr-2 text-white-50"></i>Brand: <strong class="text-white">{{ voiture.marque }}</strong></li>
+                        <li class="mb-2"><i class="fas fa-car mr-2 text-white-50"></i>Model: <strong class="text-white">{{ voiture.modele }}</strong></li>
+                    </ul>
+
+                    <div class="mt-auto">
+                        {% if voiture.disponible %}
+                            <a href="{{ path('app_reservation_new', {voiture: voiture.id, pickupDate: pickupDate, returnDate: returnDate}) }}" class="btn-cr-primary w-100 d-block text-center">
+                                <i class="fas fa-calendar-check mr-1"></i> Book This Vehicle
+                            </a>
+                        {% else %}
+                            <span class="btn-cr-outline w-100 d-block text-center" style="opacity:.5;">Unavailable for booking</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

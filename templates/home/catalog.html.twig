@@ -1,161 +1,58 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Nos Voitures — CarRent</title>
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        :root { --primary: #4e73df; --secondary: #858796; --success: #1cc88a; }
-        body { font-family: 'Nunito', sans-serif; background-color: #f8f9fa; }
-        .navbar-custom { background: linear-gradient(135deg, #1a3c6b, #4e73df) !important; }
-        .page-header { background: linear-gradient(135deg, #1a3c6b 0%, #4e73df 100%); color: white; padding: 50px 0; }
-        .car-card { border: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%; }
-        .car-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        .car-card .card-header { background: linear-gradient(135deg, #1a3c6b, #4e73df); color: white; padding: 15px; }
-        .badge-price { background: #1cc88a; color: white; font-size: 1.2rem; padding: 10px 15px; border-radius: 5px; }
-        .btn-primary { background: linear-gradient(135deg, #1a3c6b, #4e73df); border: none; }
-        .btn-primary:hover { background: linear-gradient(135deg, #4e73df, #1a3c6b); }
-        .filter-card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    </style>
-</head>
-<body>
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Our Fleet{% endblock %}
+
+{% block body %}
+<section class="cr-section pt-5">
     <div class="container">
-        <a class="navbar-brand font-weight-bold" href="{{ path('app_home') }}">
-            <i class="fas fa-car mr-2"></i>CarRent
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">
-                        <i class="fas fa-home mr-1"></i>Accueil
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ path('app_catalog') }}">
-                        <i class="fas fa-list mr-1"></i>Nos Voitures
-                    </a>
-                </li>
-                {% if app.user %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_dashboard') }}">
-                                <i class="fas fa-tachometer-alt mr-1"></i>Tableau de Bord
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_profile') }}">
-                            <i class="fas fa-user-circle mr-1"></i>Mon Compte
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ logout_path() }}">
-                            <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-sm btn-light text-primary font-weight-bold mx-2" href="{{ path('app_login') }}">
-                            <i class="fas fa-sign-in-alt mr-1"></i>Connexion
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-sm btn-primary text-white font-weight-bold" href="{{ path('app_signup') }}">
-                            <i class="fas fa-user-plus mr-1"></i>Inscription
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
+        <div class="cr-section-title cr-reveal cr-visible">
+            <h2>Our Fleet</h2>
+            <div class="cr-underline"></div>
+            <p>{{ voitures|length }} vehicle{{ voitures|length != 1 ? 's' }} available{% if currentBrand %} — {{ currentBrand }}{% endif %}</p>
         </div>
-    </div>
-</nav>
 
-<!-- Page Header -->
-<div class="page-header">
-    <div class="container">
-        <h1><i class="fas fa-list mr-2"></i>Nos Voitures Disponibles</h1>
-        <p class="lead mb-0">Découvrez notre large gamme de véhicules à louer</p>
-    </div>
-</div>
-
-<!-- Main Content -->
-<div class="container my-5">
-    <div class="row">
-        <!-- Sidebar Filters -->
-        <div class="col-md-3">
-            <div class="filter-card">
-                <h5 class="mb-3"><i class="fas fa-filter mr-2"></i>Filtres</h5>
-                <hr>
-                <a href="{{ path('app_catalog') }}" class="btn btn-primary btn-sm btn-block">
-                    <i class="fas fa-redo mr-1"></i>Réinitialiser
-                </a>
+        <form class="cr-filter-bar cr-reveal cr-visible" method="get" action="{{ path('app_catalog') }}">
+            <div class="form-group flex-grow-1" style="min-width:180px;">
+                <label for="filterQ">Search</label>
+                <input type="text" id="filterQ" name="q" class="form-control cr-input" placeholder="Brand or model..." value="{{ currentQuery }}">
             </div>
-        </div>
-
-        <!-- Cars Grid -->
-        <div class="col-md-9">
-            {% if voitures|length > 0 %}
-                <div class="row">
-                    {% for voiture in voitures %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="car-card">
-                                <div class="card-header">
-                                    <h6 class="mb-0">{{ voiture.marque }}</h6>
-                                </div>
-                                <div class="card-body">
-                                    {% if voiture.image %}
-                                        <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" class="img-fluid mb-3" alt="{{ voiture.marque }}">
-                                    {% else %}
-                                        <div class="bg-light text-center py-5 mb-3">
-                                            <i class="fas fa-car fa-3x text-gray-300"></i>
-                                        </div>
-                                    {% endif %}
-                                    <h6>{{ voiture.modele }}</h6>
-                                    <div class="my-3">
-                                        <span class="badge-price">{{ voiture.prixParJour }} DT / jour</span>
-                                    </div>
-                                    <div class="mb-3">
-                                        {% if voiture.disponible %}
-                                            <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i>Disponible</span>
-                                        {% else %}
-                                            <span class="badge badge-secondary"><i class="fas fa-times-circle mr-1"></i>Indisponible</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-transparent border-top">
-                                    {% if app.user %}
-                                        <a href="{{ path('app_reservation_new') }}" class="btn btn-primary btn-sm btn-block">
-                                            <i class="fas fa-calendar-check mr-1"></i>Réserver
-                                        </a>
-                                    {% else %}
-                                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm btn-block">
-                                            <i class="fas fa-lock mr-1"></i>Se connecter pour réserver
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+            <div class="form-group" style="min-width:160px;">
+                <label for="filterBrand">Brand</label>
+                <select id="filterBrand" name="brand" class="form-control cr-input">
+                    <option value="">All brands</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand }}" {{ currentBrand == brand ? 'selected' }}>{{ brand }}</option>
                     {% endfor %}
-                </div>
-            {% else %}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle mr-2"></i>Aucune voiture disponible pour le moment.
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
+                </select>
+            </div>
+            <div class="form-group" style="min-width:160px;">
+                <label for="filterSort">Sort by</label>
+                <select id="filterSort" name="sort" class="form-control cr-input">
+                    <option value="price_asc" {{ currentSort == 'price_asc' ? 'selected' }}>Price: Low to High</option>
+                    <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' }}>Price: High to Low</option>
+                    <option value="name" {{ currentSort == 'name' ? 'selected' }}>Brand name</option>
+                </select>
+            </div>
+            {% if pickupDate %}<input type="hidden" name="pickupDate" value="{{ pickupDate }}">{% endif %}
+            {% if returnDate %}<input type="hidden" name="returnDate" value="{{ returnDate }}">{% endif %}
+            <div class="form-group">
+                <button type="submit" class="btn-cr-primary">Apply</button>
+                <a href="{{ path('app_catalog') }}" class="btn-cr-outline ml-2">Reset</a>
+            </div>
+        </form>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        {% if voitures|length > 0 %}
+            <div class="cr-grid">
+                {% for voiture in voitures %}
+                    {% include 'home/_car_card.html.twig' with {voiture: voiture, pickupDate: pickupDate, returnDate: returnDate} %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-danger cr-reveal cr-visible text-center py-5">
+                <i class="fas fa-car-side fa-2x mb-3 d-block"></i>
+                No vehicles match your search right now. Try adjusting your filters.
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
