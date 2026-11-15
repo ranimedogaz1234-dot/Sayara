@@ -94,20 +94,15 @@ class ProfileControllerTest extends WebTestCase
 
     /**
      * The edit form invites an empty password field ("Laisser vide pour ne pas
-     * changer"), but User::$password carries Assert\Length(min: 8) with no
-     * NotBlank alongside it, and since Symfony 5.0 Length rejects the empty
-     * string instead of skipping it. So submitting the form without a password
-     * always fails validation with 422.
-     *
-     * This is a pre-existing bug, independent of the plaintext-retention fix in
-     * this branch: validation runs before the password handling either way.
-     * The test is kept, and skipped, so the intended behaviour is recorded and
-     * can be enabled by the branch that fixes the constraint.
+     * changer"). This was originally skipped here: User::$password carried
+     * Assert\Length(min: 8) with no group restriction, so it ran on every
+     * submission and rejected the empty string. fix/profile-validation
+     * (merged into main) scoped Length to the 'registration' and
+     * 'password_change' groups, activated only when a password was actually
+     * submitted, which fixes exactly this. Un-skipped and confirmed passing.
      */
     public function testEmptyPasswordFieldKeepsTheCurrentPassword(): void
     {
-        self::markTestSkipped('Known pre-existing bug: Assert\Length(min: 8) on User::$password rejects an empty field, so "leave blank to keep" cannot work. Tracked for its own branch.');
-
         [$client, $em, $hasher, $victim] = $this->bootWithUsers();
         $client->loginUser($victim);
 

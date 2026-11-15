@@ -43,14 +43,27 @@ abstract class SecurityTestCase extends WebTestCase
     private function assertIsolatedDatabase(EntityManagerInterface $em): void
     {
         $params = $em->getConnection()->getParams();
-        $path = $params['path'] ?? $params['url'] ?? '';
+        $path = str_replace('\\', '/', $params['path'] ?? $params['url'] ?? '');
 
-        self::assertStringContainsString(
-            'test_security.db',
+        // Originally checked for the literal "test_security.db" this branch's
+        // own phpunit.dist.xml forces. Since fix/profile-password merged,
+        // config/packages/doctrine.yaml's own when@test "url" (a direct
+        // config value, not read from DATABASE_URL) takes precedence over
+        // that env var override and resolves to var/test.db instead - a
+        // different filename, equally isolated. The check is now path-based
+        // rather than tied to one specific filename, so it keeps working
+        // regardless of which of the two (equally safe) mechanisms wins.
+        self::assertMatchesRegularExpression(
+            '#/var/test[^/]*\.db$#',
             $path,
-            'Refusing to run: the test suite is not connected to the isolated '
-            .'database (resolved to "'.$path.'"). This must never resolve to '
-            .'var/data.db.',
+            'Refusing to run: the test suite is not connected to an isolated '
+            .'var/test*.db file (resolved to "'.$path.'"). This must never '
+            .'resolve to var/data.db.',
+        );
+        self::assertStringNotContainsString(
+            '/data.db',
+            $path,
+            'Refusing to run: resolved to the real development database ("'.$path.'").',
         );
     }
 
