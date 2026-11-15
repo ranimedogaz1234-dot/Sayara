@@ -14,6 +14,26 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class AuthenticationSessionTest extends SecurityTestCase
 {
+    /**
+     * login_throttling's rate limiter (config/packages/security.yaml,
+     * max_attempts: 5) is keyed by username and backed by the default
+     * filesystem cache.app pool, which is NOT reset between separate
+     * `php bin/phpunit` invocations (it is cleared only by
+     * cache:pool:clear or a var/cache wipe). Reusing a fixed username such
+     * as 'victim' across every test method in this class let the 5 failed
+     * attempts from testLoginThrottlingBlocksAfterRepeatedFailures persist
+     * on disk and leak into testCorrectCredentialsAuthenticate's legitimate
+     * attempt on a later invocation - reproduced locally: a second
+     * `php bin/phpunit` run failed where the first had passed, purely from
+     * leftover throttle state in var/cache/test/pools/system/. Each test
+     * now logs in as its own uniquely-suffixed username instead, so no
+     * run, past or future, can ever have throttled it.
+     */
+    private function uniqueUsername(string $prefix): string
+    {
+        return $prefix.'-'.bin2hex(random_bytes(4));
+    }
+
     private function submitLogin(\Symfony\Bundle\FrameworkBundle\KernelBrowser $client, string $username, string $password): void
     {
         $token = static::getContainer()->get('security.csrf.token_manager')
@@ -47,9 +67,10 @@ class AuthenticationSessionTest extends SecurityTestCase
     {
         $client = $this->bootWithFixtures();
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->makeUser($em, 'victim', 'CorrectPass123');
+        $username = $this->uniqueUsername('victim');
+        $this->makeUser($em, $username, 'CorrectPass123');
 
-        $this->submitLogin($client, 'victim', 'WrongPassword');
+        $this->submitLogin($client, $username, 'WrongPassword');
 
         self::assertResponseRedirects('/login');
         self::assertFalse($this->isAuthenticated($client));
@@ -59,7 +80,7 @@ class AuthenticationSessionTest extends SecurityTestCase
     {
         $client = $this->bootWithFixtures();
 
-        $this->submitLogin($client, 'nobody-here', 'WhateverPass123');
+        $this->submitLogin($client, $this->uniqueUsername('nobody-here'), 'WhateverPass123');
 
         self::assertResponseRedirects('/login');
         self::assertFalse($this->isAuthenticated($client));
@@ -69,9 +90,10 @@ class AuthenticationSessionTest extends SecurityTestCase
     {
         $client = $this->bootWithFixtures();
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->makeUser($em, 'victim', 'CorrectPass123');
+        $username = $this->uniqueUsername('victim');
+        $this->makeUser($em, $username, 'CorrectPass123');
 
-        $this->submitLogin($client, 'victim', 'CorrectPass123');
+        $this->submitLogin($client, $username, 'CorrectPass123');
 
         self::assertResponseRedirects();
         self::assertTrue($this->isAuthenticated($client));
@@ -86,15 +108,16 @@ class AuthenticationSessionTest extends SecurityTestCase
     {
         $client = $this->bootWithFixtures();
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        $this->makeUser($em, 'victim', 'CorrectPass123');
+        $username = $this->uniqueUsername('victim');
+        $this->makeUser($em, $username, 'CorrectPass123');
 
         for ($i = 0; $i < 5; ++$i) {
-            $this->submitLogin($client, 'victim', 'WrongPassword'.$i);
+            $this->submitLogin($client, $username, 'WrongPassword'.$i);
         }
 
         // The 6th attempt uses the CORRECT password; throttling must still
         // block it if the limit was reached.
-        $this->submitLogin($client, 'victim', 'CorrectPass123');
+        $this->submitLogin($client, $username, 'CorrectPass123');
 
         self::assertFalse(
             $this->isAuthenticated($client),
