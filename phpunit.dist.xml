@@ -15,6 +15,18 @@
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+        <!--
+            Force the test suite onto its own SQLite file. Without this,
+            DATABASE_URL resolves from .env to var/data.db - the real
+            development database - because dbname_suffix in
+            config/packages/doctrine.yaml (when@test) has no effect on a
+            SQLite file path. Verified by inspecting the resolved Doctrine
+            connection parameters (no connection opened) before adding this
+            line: they pointed at var/data.db. force="true" makes this value
+            win over whatever Dotenv loads from .env, since Dotenv's
+            populate() does not overwrite an already-set variable.
+        -->
+        <server name="DATABASE_URL" value="sqlite:///var/test_security.db" force="true" />
     </php>
 
     <testsuites>
