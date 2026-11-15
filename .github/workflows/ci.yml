@@ -87,6 +87,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # .env is gitignored in this repository on purpose (real secrets stay
+      # local, never committed), so a fresh checkout has none at all.
+      # Symfony\Component\Dotenv\Dotenv::bootEnv() throws a PathException
+      # the moment that file does not exist, regardless of whether the real
+      # values it would hold (APP_ENV, APP_SECRET, DATABASE_URL, etc. above)
+      # are already set as real environment variables - every entry point
+      # in this project calls it unconditionally (bin/console directly, and
+      # tests/bootstrap.php for PHPUnit). This is exactly what failed every
+      # prior run: composer install's post-install-cmd auto-script runs
+      # cache:clear, which boots the kernel and hits that exception before
+      # any other step had a chance to run.
+      #
+      # An empty file is enough: Dotenv parses zero variables from it and,
+      # since it never overwrites a variable that is already set, every
+      # real value above is left exactly as this job defined it. Verified
+      # directly against this project's own installed Dotenv class before
+      # relying on it: a missing path throws that same PathException; a
+      # merely-empty one does not, and an already-set variable survives
+      # unchanged either way.
+      - name: Ensure a (gitignored, empty) .env exists for this job
+        run: touch .env
+
       - name: Set up PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
