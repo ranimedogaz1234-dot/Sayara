@@ -50,7 +50,7 @@
                                         <td data-label="Ref." class="meta" style="color:var(--gold);">#{{ '%04d'|format(reservation.id) }}</td>
                                         <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
                                         <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
-                                        <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|number_format(0, '.', ' ') }} DT</td>
+                                        <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|usd }}</td>
                                         <td class="text-right cr-table__actions"><a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="link-lx" style="padding-bottom:4px;">View <span class="arrow">&rarr;</span></a></td>
                                     </tr>
                                 {% endfor %}

@@ -22,7 +22,7 @@
                             <div><dt>Car</dt><dd>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</dd></div>
                             <div><dt>Pick-up</dt><dd>{{ reservation.dateDebut|date('l d F Y') }}</dd></div>
                             <div><dt>Return</dt><dd>{{ reservation.dateFin|date('l d F Y') }}</dd></div>
-                            <div><dt>Total</dt><dd>{{ reservation.prixTotal|number_format(2, '.', ' ') }} DT</dd></div>
+                            <div><dt>Total</dt><dd>{{ reservation.prixTotal|usd(2) }}</dd></div>
                             <div>
                                 <dt>Status</dt>
                                 <dd>{% if reservation.statut == 'confirmed' %}<span class="cr-pill cr-pill-confirmed">Confirmed &amp; paid</span>{% else %}<span class="cr-pill cr-pill-pending">Awaiting payment</span>{% endif %}</dd>

@@ -65,7 +65,7 @@ class VoitureRepository extends ServiceEntityRepository
      *
      * @return Voiture[]
      */
-    public function searchAvailable(?string $brand, ?string $query, string $sort): array
+    public function searchAvailable(?string $brand, ?string $query, string $sort, ?float $maxPrice = null): array
     {
         $qb = $this->createQueryBuilder('v')
             ->where('v.disponible = :dispo')
@@ -78,6 +78,10 @@ class VoitureRepository extends ServiceEntityRepository
         if ($query) {
             $qb->andWhere('v.marque LIKE :q OR v.modele LIKE :q')
                 ->setParameter('q', '%'.$query.'%');
+        }
+
+        if (null !== $maxPrice) {
+            $qb->andWhere('v.prixParJour <= :maxPrice')->setParameter('maxPrice', $maxPrice);
         }
 
         match ($sort) {

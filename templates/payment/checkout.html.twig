@@ -189,7 +189,7 @@
                     </div>
 
                     <button type="submit" class="btn-cr-primary w-100">
-                        <i class="fas fa-lock mr-2"></i>Confirm Payment — {{ reservation.prixTotal|number_format(2, ',', ' ') }} DT
+                        <i class="fas fa-lock mr-2"></i>Confirm Payment — {{ reservation.prixTotal|usd(2) }}
                     </button>
                 </form>
             </div>
@@ -207,10 +207,10 @@
             <div class="summary-row"><span>Return</span><span>{{ reservation.dateFin|date('d/m/Y') }}</span></div>
             {% set days = (reservation.dateFin.timestamp - reservation.dateDebut.timestamp) / 86400 + 1 %}
             <div class="summary-row"><span>Duration</span><span>{{ days|round(0,'ceil') }} day(s)</span></div>
-            <div class="summary-row"><span>Price per day</span><span>{{ reservation.voiture.prixParJour|number_format(0, '.', ' ') }} DT</span></div>
+            <div class="summary-row"><span>Price per day</span><span>{{ reservation.voiture.prixParJour|usd }}</span></div>
             <div class="d-flex justify-content-between align-items-baseline pt-4">
                 <span class="eyebrow">Total</span>
-                <span class="price-total">{{ reservation.prixTotal|number_format(2, ',', ' ') }} <small style="font-size:16px;">DT</small></span>
+                <span class="price-total">{{ reservation.prixTotal|usd(2) }}</span>
             </div>
         </div>
 

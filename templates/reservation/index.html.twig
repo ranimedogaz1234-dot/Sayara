@@ -39,7 +39,7 @@
                                 {% if is_granted('ROLE_ADMIN') %}<td data-label="Client">{{ reservation.client.nom }}</td>{% endif %}
                                 <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
                                 <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
-                                <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|number_format(0, '.', ' ') }} DT</td>
+                                <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|usd }}</td>
                                 <td data-label="Status">
                                     {% if reservation.statut == 'confirmed' %}
                                         <span class="cr-pill cr-pill-confirmed">Confirmed</span>

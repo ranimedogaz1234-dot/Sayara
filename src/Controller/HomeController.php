@@ -11,6 +11,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+    /** Daily-rate ceilings offered by the search bar's "Price" field, in USD. */
+    public const PRICE_STEPS = [500, 1000, 2500, 5000, 10000];
+
     #[Route('/', name: 'app_home')]
     public function index(VoitureRepository $voitureRepository): Response
     {
@@ -20,6 +23,7 @@ class HomeController extends AbstractController
             'featuredVoitures' => $voitureRepository->findBy(['disponible' => true], ['prixParJour' => 'DESC'], 6),
             'brandCounts' => $voitureRepository->countAvailableByBrand(),
             'brands' => $voitureRepository->findDistinctBrands(),
+            'priceSteps' => self::PRICE_STEPS,
         ]);
     }
 
@@ -29,6 +33,12 @@ class HomeController extends AbstractController
         $brand = $request->query->get('brand') ?: null;
         $q = trim((string) $request->query->get('q', '')) ?: null;
         $sort = $request->query->get('sort', 'price_asc');
+        // Daily-rate ceiling from the "Price" field; only the listed steps
+        // are accepted, anything else means "any price".
+        $maxPrice = (int) $request->query->get('maxPrice', 0);
+        if (!in_array($maxPrice, self::PRICE_STEPS, true)) {
+            $maxPrice = null;
+        }
         if (!in_array($sort, ['price_asc', 'price_desc', 'name'], true)) {
             $sort = 'price_asc';
         }
@@ -41,8 +51,12 @@ class HomeController extends AbstractController
         // message instead of being silently ignored, and the valid dates
         // are carried through to pre-fill the reservation form once a
         // vehicle is chosen.
-        $pickupDate = $request->query->get('pickupDate') ?: null;
-        $returnDate = $request->query->get('returnDate') ?: null;
+        // The homepage search sends a pick-up date on its own; anything that
+        // is not a real Y-m-d date is dropped before it reaches a template
+        // or a booking link.
+        $validDate = static fn (mixed $v): ?string => is_string($v) && false !== \DateTime::createFromFormat('!Y-m-d', $v) ? $v : null;
+        $pickupDate = $validDate($request->query->get('pickupDate'));
+        $returnDate = $validDate($request->query->get('returnDate'));
         if ($pickupDate && $returnDate) {
             try {
                 $debut = new \DateTime($pickupDate);
@@ -58,11 +72,13 @@ class HomeController extends AbstractController
         }
 
         return $this->render('home/catalog.html.twig', [
-            'voitures' => $voitureRepository->searchAvailable($brand, $q, $sort),
+            'voitures' => $voitureRepository->searchAvailable($brand, $q, $sort, null !== $maxPrice ? (float) $maxPrice : null),
             'brands' => $voitureRepository->findDistinctBrands(),
             'currentBrand' => $brand,
             'currentQuery' => $q,
             'currentSort' => $sort,
+            'currentMaxPrice' => $maxPrice,
+            'priceSteps' => self::PRICE_STEPS,
             'pickupDate' => $pickupDate,
             'returnDate' => $returnDate,
         ]);

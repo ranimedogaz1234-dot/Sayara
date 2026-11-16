@@ -79,11 +79,11 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label"><i class="fas fa-tag mr-2"></i>Price/day</span>
-                    <span class="detail-value">{{ reservation.voiture.prixParJour }} DT</span>
+                    <span class="detail-value">{{ reservation.voiture.prixParJour|usd }}</span>
                 </div>
                 <div class="detail-row" style="background:rgba(255,255,255,.03);border-radius:6px;padding:.75rem .5rem;">
                     <span class="detail-label" style="color:var(--gold);">Total paid</span>
-                    <span class="detail-value" style="font-size:1.3rem;">{{ reservation.prixTotal|number_format(2, ',', ' ') }} DT</span>
+                    <span class="detail-value" style="font-size:1.3rem;">{{ reservation.prixTotal|usd(2) }}</span>
                 </div>
             </div>
         </div>

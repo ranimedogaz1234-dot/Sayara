@@ -35,7 +35,7 @@
                 <dl class="lx-specs">
                     <div><dt>Make</dt><dd>{{ voiture.marque }}</dd></div>
                     <div><dt>Model</dt><dd>{{ voiture.modele }}</dd></div>
-                    <div><dt>Daily rate</dt><dd>{{ voiture.prixParJour|number_format(0, '.', ' ') }} DT</dd></div>
+                    <div><dt>Daily rate</dt><dd>{{ voiture.prixParJour|usd }}</dd></div>
                 </dl>
 
                 {% if voiture.disponible %}
@@ -83,7 +83,7 @@
             if (!a.value || !b.value) { out.textContent = 'Total calculated from your dates'; return; }
             var days = Math.round((new Date(b.value) - new Date(a.value)) / 86400000);
             if (days <= 0) { out.textContent = 'Return must be after pick-up'; return; }
-            out.textContent = (days + 1) + ' days · estimated ' + ((days + 1) * rate).toLocaleString('fr-FR') + ' DT';
+            out.textContent = (days + 1) + ' days · estimated $' + ((days + 1) * rate).toLocaleString('en-US');
         }
         a.addEventListener('change', function () { b.min = a.value; update(); });
         b.addEventListener('change', update);

@@ -35,17 +35,21 @@
                 </select>
             </div>
             <div class="lx-search__field">
-                <label>Your dates</label>
-                <span style="font-size:14px;color:var(--ivory-70);">
-                    {% if pickupDate and returnDate %}{{ pickupDate|date('d M') }} — {{ returnDate|date('d M Y') }}{% else %}Choose on the car's page{% endif %}
-                </span>
+                <label for="fPrice">Price</label>
+                <select id="fPrice" name="maxPrice">
+                    <option value="">Any price</option>
+                    {% for step in priceSteps %}<option value="{{ step }}" {{ currentMaxPrice == step ? 'selected' }}>Up to {{ step|usd }} / day</option>{% endfor %}
+                </select>
             </div>
             {% if pickupDate %}<input type="hidden" name="pickupDate" value="{{ pickupDate }}">{% endif %}
             {% if returnDate %}<input type="hidden" name="returnDate" value="{{ returnDate }}">{% endif %}
             <button type="submit" class="lx-search__submit">Apply</button>
         </form>
 
-        {% if currentBrand or currentQuery %}
+        {% if pickupDate and returnDate %}
+            <p class="meta mb-3">Your dates &middot; {{ pickupDate|date('d M') }} — {{ returnDate|date('d M Y') }}</p>
+        {% endif %}
+        {% if currentBrand or currentQuery or currentMaxPrice %}
             <p class="meta mb-5">Filtered results &middot; <a href="{{ path('app_catalog') }}" style="color:var(--gold);">Clear filters</a></p>
         {% endif %}
 

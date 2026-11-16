@@ -18,7 +18,7 @@
         </h3>
         <hr class="rule">
         <div class="lx-card__foot">
-            <div class="lx-price">{{ voiture.prixParJour|number_format(0, '.', ' ') }} DT<small>Per day</small></div>
+            <div class="lx-price">{{ voiture.prixParJour|usd }}<small>Per day</small></div>
             <span class="lx-card__cta" aria-hidden="true">View details</span>
         </div>
     </div>
