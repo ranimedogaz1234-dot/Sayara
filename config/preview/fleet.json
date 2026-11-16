@@ -2,13 +2,13 @@
     "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Prices are daily rates in US dollars. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits.",
     "hero": {
         "image": "hero-cullinan.jpg",
-        "caption": "Rolls-Royce Cullinan Black Badge",
-        "commonsFile": "File:2021 Rolls-Royce Cullinan Black Badge - 03.jpg",
-        "author": "Oleg Yunakov",
+        "caption": "Rolls-Royce Cullinan",
+        "commonsFile": "File:Rolls-Royce Cullinan Genf 2019 1Y7A5094.jpg",
+        "author": "Alexander Migl",
         "license": "CC BY-SA 4.0",
         "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2021_Rolls-Royce_Cullinan_Black_Badge_-_03.jpg",
-        "modification": "Cut out, recoloured to black and composited into a rendered showroom; the composite is shared under the same licence."
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rolls-Royce_Cullinan_Genf_2019_1Y7A5094.jpg",
+        "modification": "Cut out, regraded to gloss black and composited into a rendered showroom; the composite is shared under the same licence."
     },
     "photos": {
         "preview-rolls-royce-phantom.jpg": {
