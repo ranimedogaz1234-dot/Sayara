@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Voiture;
 use App\Repository\VoitureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,13 +15,22 @@ class HomeController extends AbstractController
     /** Daily-rate ceilings offered by the search bar's "Price" field, in USD. */
     public const PRICE_STEPS = [500, 1000, 2500, 5000, 10000];
 
+    /** Cards in the homepage selection: three full rows of three. */
+    private const FEATURED_LIMIT = 9;
+
+    /**
+     * @param list<array{marque: string, modele: string}> $featuredSelection
+     */
     #[Route('/', name: 'app_home')]
-    public function index(VoitureRepository $voitureRepository): Response
+    public function index(
+        VoitureRepository $voitureRepository,
+        #[Autowire('%app.featured_selection%')] array $featuredSelection,
+    ): Response
     {
         return $this->render('home/index.html.twig', [
-            // The featured section shows up to 6 real, currently available
-            // vehicles - never a fixed, possibly-stale list.
-            'featuredVoitures' => $voitureRepository->findBy(['disponible' => true], ['prixParJour' => 'DESC'], 6),
+            // Real, currently available vehicles: the pinned selection from
+            // config/services.yaml first, then the priciest others.
+            'featuredVoitures' => $voitureRepository->findFeatured($featuredSelection, self::FEATURED_LIMIT),
             'brandCounts' => $voitureRepository->countAvailableByBrand(),
             'brands' => $voitureRepository->findDistinctBrands(),
             'priceSteps' => self::PRICE_STEPS,

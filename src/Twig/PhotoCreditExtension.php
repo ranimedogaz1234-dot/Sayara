@@ -41,7 +41,9 @@ final class PhotoCreditExtension extends AbstractExtension
             return null;
         }
 
-        return $this->manifest()['photos'][$filename] ?? null;
+        $photo = $this->manifest()['photos'][$filename] ?? null;
+
+        return is_array($photo) && isset($photo['license']) ? $photo : null;
     }
 
     /**
@@ -49,7 +51,9 @@ final class PhotoCreditExtension extends AbstractExtension
      */
     public function photoCredits(): array
     {
-        return $this->manifest()['photos'] ?? [];
+        // Photos supplied by the site owner carry no third-party licence and
+        // are not listed on the credits page.
+        return array_filter($this->manifest()['photos'] ?? [], static fn ($p): bool => is_array($p) && isset($p['license']));
     }
 
     /**

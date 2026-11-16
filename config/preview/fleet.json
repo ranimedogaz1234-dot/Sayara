@@ -1,15 +1,5 @@
 {
-    "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Prices are daily rates in US dollars. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits.",
-    "hero": {
-        "image": "hero-cullinan.jpg",
-        "caption": "Rolls-Royce Cullinan",
-        "commonsFile": "File:Rolls-Royce Cullinan Genf 2019 1Y7A5094.jpg",
-        "author": "Alexander Migl",
-        "license": "CC BY-SA 4.0",
-        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rolls-Royce_Cullinan_Genf_2019_1Y7A5094.jpg",
-        "modification": "Cut out, regraded to gloss black and composited into a rendered showroom; the composite is shared under the same licence."
-    },
+    "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Prices are daily rates in US dollars. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits. Photos marked localFile were supplied by the site owner and are copied from config/preview/photos/; vehicles under \"retired\" are removed from var/preview.db (or marked unavailable if they have bookings).",
     "photos": {
         "preview-rolls-royce-phantom.jpg": {
             "commonsFile": "File:Rolls-Royce Phantom, Geneva International Motor Show 2018, Le Grand-Saconnex (1X7A1220).jpg",
@@ -67,19 +57,28 @@
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bugatti_Chiron_With_Lights.jpg"
         },
-        "preview-porsche-911-pink.jpg": {
-            "commonsFile": "File:Porsche 911 Carrera RS, pink.jpg",
-            "author": "Cjp24",
-            "license": "CC BY-SA 4.0",
-            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Porsche_911_Carrera_RS,_pink.jpg"
-        },
         "preview-tesla-model-s-plaid.jpg": {
             "commonsFile": "File:Tesla Model S Plaid Autofrühling Ulm IMG 9278 (cropped).jpg",
             "author": "Alexander-93",
             "license": "CC BY-SA 4.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tesla_Model_S_Plaid_Autofrühling_Ulm_IMG_9278_(cropped).jpg"
+        },
+        "preview-cullinan-emerald.jpg": {
+            "localFile": "config/preview/photos/preview-cullinan-emerald.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-urus-grey.jpg": {
+            "localFile": "config/preview/photos/preview-urus-grey.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-urus-black.jpg": {
+            "localFile": "config/preview/photos/preview-urus-black.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-cullinan-black-gold.jpg": {
+            "localFile": "config/preview/photos/preview-cullinan-black-gold.jpg",
+            "source": "Supplied by the site owner"
         }
     },
     "vehicles": [
@@ -140,18 +139,45 @@
             "image": "preview-bugatti-chiron.jpg"
         },
         {
-            "marque": "Porsche",
-            "modele": "911 Carrera RS Pink",
-            "prixParJour": 1900,
-            "disponible": true,
-            "image": "preview-porsche-911-pink.jpg"
-        },
-        {
             "marque": "Tesla",
             "modele": "Model S Plaid",
             "prixParJour": 450,
             "disponible": true,
             "image": "preview-tesla-model-s-plaid.jpg"
+        },
+        {
+            "marque": "Rolls-Royce",
+            "modele": "Cullinan — Emerald Green",
+            "prixParJour": 1800,
+            "disponible": true,
+            "image": "preview-cullinan-emerald.jpg"
+        },
+        {
+            "marque": "Lamborghini",
+            "modele": "Urus — Grey",
+            "prixParJour": 1400,
+            "disponible": true,
+            "image": "preview-urus-grey.jpg"
+        },
+        {
+            "marque": "Lamborghini",
+            "modele": "Urus — Black",
+            "prixParJour": 1500,
+            "disponible": true,
+            "image": "preview-urus-black.jpg"
+        },
+        {
+            "marque": "Rolls-Royce",
+            "modele": "Cullinan — Black & Gold",
+            "prixParJour": 2200,
+            "disponible": true,
+            "image": "preview-cullinan-black-gold.jpg"
+        }
+    ],
+    "retired": [
+        {
+            "marque": "Porsche",
+            "modele": "911 Carrera RS Pink"
         }
     ]
 }

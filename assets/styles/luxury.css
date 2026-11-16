@@ -191,7 +191,7 @@
    photograph, a 1200px content column, bottom-aligned copy and search. */
 .lx-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); isolation: isolate; }
 .lx-hero__media { position: absolute; inset: 0; z-index: -2; }
-.lx-hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; transform: scale(1.03); animation: lx-settle 2.6s var(--ease) forwards; }
+.lx-hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 76% 50%; /* car sits right of centre: keep its rear in frame on narrower screens */ transform: scale(1.03); animation: lx-settle 2.6s var(--ease) forwards; }
 @keyframes lx-settle { to { transform: scale(1); } }
 .lx-hero::after {
   /* only a whisper of shade: keeps the copy legible on narrower screens */
