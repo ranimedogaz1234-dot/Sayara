@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CarRent — luxury public theme
+   Sayara — luxury public theme
    Applies only to templates extending base_public.html.twig (the customer
    site). The admin back-office keeps base.html.twig / SB Admin 2.
 
@@ -25,10 +25,14 @@
   --ok: #9DBE96;
   --warn: #D49A86;
 
-  --serif: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Matches the homepage reference: a classic Times-style serif for display
+     type (Tinos is metric-compatible with Times New Roman) and a wide,
+     open humanist sans for UI text. */
+  --serif: 'Tinos', 'Times New Roman', Times, serif;
+  --sans: 'DejaVu Sans', Verdana, Geneva, 'Segoe UI', sans-serif;
   --ease: cubic-bezier(.22, .61, .36, 1);
-  --nav-h: 84px;
+  --nav-h: 80px;
+  --gold-hi: #D8BC86;
 
   /* Aliases for templates written against the previous theme (payment,
      confirmation inline styles). Mapped onto the new palette. */
@@ -52,10 +56,10 @@
   background: var(--ink);
   color: var(--ivory);
   font-family: var(--sans);
-  font-weight: 300;
-  font-size: 14.5px;
-  line-height: 1.65;
-  letter-spacing: .01em;
+  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 1.7;
+  letter-spacing: .015em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -121,12 +125,12 @@
 }
 .lx-nav.is-solid { background: rgba(9, 9, 9, .94); border-bottom-color: var(--line); backdrop-filter: saturate(140%) blur(10px); }
 .lx-nav .container { display: flex; align-items: center; justify-content: space-between; }
-.lx-brand { font-family: var(--serif); font-weight: 400; font-size: 27px; letter-spacing: .02em; color: var(--gold) !important; line-height: 1; }
+.lx-brand { font-family: var(--serif); font-weight: 400; font-size: 30px; letter-spacing: .005em; color: var(--gold) !important; line-height: 1; }
 .lx-brand:hover { color: var(--ivory) !important; }
-.lx-menu { display: flex; align-items: center; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.lx-menu { display: flex; align-items: center; gap: 10px; list-style: none; margin: 0 auto; padding: 0; }
 .lx-menu a, .lx-signin {
   position: relative; display: inline-block; padding: 8px 16px;
-  font: 400 10.5px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--ivory-70);
+  font: 400 13px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: rgba(244, 240, 232, .76);
   transition: color .3s var(--ease);
 }
 .lx-menu a::after {
@@ -135,7 +139,10 @@
 }
 .lx-menu a:hover, .lx-menu a.is-active, .lx-signin:hover { color: var(--ivory); }
 .lx-menu a:hover::after, .lx-menu a.is-active::after { transform: scaleX(1); }
-.lx-actions { display: flex; align-items: center; gap: 14px; }
+.lx-actions { display: flex; align-items: center; gap: 10px; }
+.lx-signin { font-size: 12.5px !important; letter-spacing: .26em !important; }
+.btn-lx--nav { padding: 14px 20px 13px; min-width: 146px; background: transparent; border-color: rgba(197, 164, 109, .75); color: var(--gold) !important; font-size: 12px; letter-spacing: .26em; }
+.btn-lx--nav:hover, .btn-lx--nav[aria-expanded="true"] { background: rgba(197, 164, 109, .1); border-color: var(--gold-hi); color: var(--gold-hi) !important; }
 .lx-account .dropdown-menu {
   min-width: 15rem; margin-top: 14px; padding: 10px 0; border-radius: 0;
   background: var(--charcoal); border: 1px solid var(--line); box-shadow: 0 24px 48px rgba(0, 0, 0, .5);
@@ -171,7 +178,7 @@
   .lx-account .dropdown-menu { position: static !important; transform: none !important; float: none; width: 100%; margin-top: 10px; box-shadow: none; }
 }
 @media (min-width: 992px) {
-  .lx-nav .lx-collapse { display: flex !important; align-items: center; justify-content: space-between; flex: 1; margin-left: 56px; }
+  .lx-nav .lx-collapse { display: flex !important; align-items: center; flex: 1; margin-left: 40px; }
 }
 
 /* ---------- Reveal (progressive enhancement: visible without JS) ---------- */
@@ -179,74 +186,55 @@
 .cr-reveal.cr-visible { opacity: 1; transform: none; }
 
 /* ---------- Hero ---------- */
+/* Built to the Sayara homepage reference (1920 x 1080): full-bleed showroom
+   photograph, a 1200px content column, bottom-aligned copy and search. */
 .lx-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); isolation: isolate; }
-/* The photo is a large panel anchored bottom-right whose top and left edges
-   are masked into black - a car standing in a dark space, with room above
-   it, rather than a photo cropped edge to edge. The masks also dissolve the
-   exhibition-hall background (visitors, poster) of the source photograph. */
-.lx-hero__media {
-  position: absolute; z-index: -3; right: -3vw; bottom: 4vh;
-  width: min(80vw, 1560px); aspect-ratio: 3 / 2;
-}
-.lx-hero__media img {
-  width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%;
-  filter: brightness(.8) contrast(1.1) saturate(.6) sepia(.2);
-  /* 3rd layer dissolves the upper-left of the photo (visitors in the
-     source image) while leaving the silver hood below it untouched. */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%), linear-gradient(180deg, transparent 0%, transparent 10%, #000 42%, #000 84%, transparent 100%), radial-gradient(ellipse 32% 17% at 22% 20%, transparent 0%, transparent 55%, #000 100%);
-  -webkit-mask-composite: source-in, source-in;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%), linear-gradient(180deg, transparent 0%, transparent 10%, #000 42%, #000 84%, transparent 100%), radial-gradient(ellipse 32% 17% at 22% 20%, transparent 0%, transparent 55%, #000 100%);
-  mask-composite: intersect, intersect;
-  transform: scale(1.04); animation: lx-settle 2.6s var(--ease) forwards;
-}
+.lx-hero__media { position: absolute; inset: 0; z-index: -2; }
+.lx-hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; transform: scale(1.03); animation: lx-settle 2.6s var(--ease) forwards; }
 @keyframes lx-settle { to { transform: scale(1); } }
-.lx-hero::before {
-  /* architectural backdrop: faint vertical light columns and a floor line */
-  content: ''; position: absolute; inset: 0; z-index: -4;
-  background:
-    radial-gradient(ellipse 18% 70% at 88% 38%, rgba(197,164,109,.16), transparent 70%),
-    radial-gradient(ellipse 14% 60% at 34% 30%, rgba(244,240,232,.035), transparent 70%),
-    linear-gradient(180deg, #0b0b0b 0%, #0e0d0c 58%, #090909 100%);
-}
 .lx-hero::after {
-  /* readability on the left, warm light pooling under the car */
-  content: ''; position: absolute; inset: 0; z-index: -2; pointer-events: none;
-  background:
-    radial-gradient(ellipse 30% 20% at 64% 86%, rgba(197,164,109,.24), transparent 72%),
-    radial-gradient(ellipse 16% 34% at 93% 58%, rgba(214,170,100,.22), transparent 70%),
-    linear-gradient(90deg, rgba(9,9,9,.92) 0%, rgba(9,9,9,.6) 26%, rgba(9,9,9,0) 50%),
-    linear-gradient(180deg, rgba(9,9,9,.55) 0%, rgba(9,9,9,0) 22%, rgba(9,9,9,0) 78%, var(--ink) 100%);
+  /* only a whisper of shade: keeps the copy legible on narrower screens */
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(9,9,9,.35) 0%, rgba(9,9,9,0) 45%), linear-gradient(180deg, rgba(9,9,9,.35) 0%, rgba(9,9,9,0) 14%, rgba(9,9,9,0) 86%, rgba(9,9,9,.5) 100%);
 }
-.lx-hero__content { width: 100%; padding: 0 0 72px; }
-.lx-hero .display { max-width: 720px; margin: 26px 0 26px; }
-.lx-hero .lede { max-width: 420px; }
-.lx-hero__credit { position: absolute; right: 32px; bottom: 26px; font-size: 10px; letter-spacing: .14em; color: var(--grey-dim); text-align: right; }
-.lx-hero__credit a { color: var(--grey); }
+.lx-hero__content { width: 100%; padding: 0 0 96px; }
+.lx-hero__eyebrow { display: block; font: 400 12.5px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.lx-hero__eyebrow i { font-style: normal; margin: 0 .35em; opacity: .7; }
+.lx-hero__title {
+  margin: 34px 0 30px; max-width: 900px;
+  font-family: var(--serif); font-weight: 400; font-size: clamp(2.7rem, 5vw, 6rem); line-height: .95; letter-spacing: -.012em; color: #F6F2EA;
+}
+.lx-hero__title em { font-style: italic; color: var(--gold); }
+.lx-hero__lede { max-width: 540px; margin: 0; font: 400 clamp(15px, 1vw, 19px)/1.55 var(--sans); letter-spacing: .035em; color: rgba(244, 240, 232, .72); }
+.lx-hero__credit { position: absolute; right: 24px; bottom: 14px; margin: 0; font-size: 9.5px; letter-spacing: .1em; color: rgba(244,240,232,.32); text-align: right; }
+.lx-hero__credit a { color: rgba(244,240,232,.45); }
 
 /* Search panel (hero + catalog) */
 .lx-search {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-  margin-top: 48px; max-width: 1040px;
-  background: rgba(9, 9, 9, .7); border: 1px solid rgba(197, 164, 109, .2);
+  margin-top: 46px; max-width: 1024px;
+  background: rgba(10, 10, 10, .72); border: 1px solid rgba(244, 240, 232, .1);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 .lx-search--wide { max-width: none; margin-top: 0; }
-.lx-search__field { padding: 20px 26px 18px; border-right: 1px solid var(--line); min-width: 0; }
-.lx-search__field label { display: block; margin: 0 0 9px; font: 500 9.5px/1 var(--sans); letter-spacing: .32em; text-transform: uppercase; color: var(--gold); }
+.lx-search__field { padding: 25px 25px 21px; border-right: 1px solid var(--line); min-width: 0; }
+.lx-search__field:nth-child(4) { border-right-color: transparent; }
+.lx-search__field label { display: block; margin: 0 0 11px; font: 400 10.5px/1 var(--sans); letter-spacing: .26em; text-transform: uppercase; color: rgba(197, 164, 109, .8); }
 .lx-search__field input, .lx-search__field select {
   width: 100%; background: transparent; border: 0; outline: none; padding: 0;
-  color: var(--ivory); font: 300 14px/1.4 var(--sans); letter-spacing: .02em;
+  color: rgba(244, 240, 232, .62); font: 400 14.5px/1.4 var(--sans); letter-spacing: .03em;
   color-scheme: dark; -webkit-appearance: none; appearance: none; border-radius: 0;
 }
 .lx-search__field input::placeholder { color: var(--grey); }
 .lx-search__field select { cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%), linear-gradient(135deg, var(--gold) 50%, transparent 50%); background-position: calc(100% - 9px) 55%, calc(100% - 5px) 55%; background-size: 4px 4px; background-repeat: no-repeat; padding-right: 20px; }
 .lx-search__field select option { background: var(--charcoal); color: var(--ivory); }
 .lx-search__submit {
-  margin: 8px; padding: 0 38px; border: 1px solid var(--gold); background: var(--gold); color: var(--ink);
-  font: 500 10.5px/1 var(--sans); letter-spacing: .32em; text-transform: uppercase; cursor: pointer;
-  transition: background-color .35s var(--ease), color .35s var(--ease); display: inline-flex; align-items: center; gap: 12px;
+  margin: 8px; padding: 0 38px; min-width: 195px; border: 1px solid var(--gold); background: var(--gold); color: #1a1508;
+  font: 400 12.5px/1 var(--sans); letter-spacing: .26em; text-transform: uppercase; cursor: pointer;
+  transition: background-color .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease); display: inline-flex; align-items: center; justify-content: center; gap: 10px;
 }
-.lx-search__submit:hover { background: transparent; color: var(--gold); }
+.lx-search__submit:hover { background: var(--gold-hi); border-color: var(--gold-hi); }
+.lx-search__submit:focus-visible { outline: 1px solid var(--gold-hi); outline-offset: 3px; }
 
 /* ---------- Sections ---------- */
 .lx-section { padding: 128px 0; }
@@ -406,6 +394,45 @@
 .luxury-body .modal-title { font-family: var(--serif); font-weight: 400; font-size: 24px; }
 .luxury-body .modal-backdrop.show { opacity: .8; }
 
+/* ---------- Typography & gold refinement (Sayara) ----------
+   Smaller, lighter type across the customer pages, a 1200px content column
+   like the homepage reference, and quiet champagne-gold detailing. */
+@media (min-width: 1200px) { .luxury-body .container { max-width: 1230px; } }
+.eyebrow { font-weight: 400; font-size: 11px; letter-spacing: .28em; }
+.display { font-weight: 400; font-size: clamp(2.2rem, 3.6vw, 3.4rem); line-height: 1.02; }
+.title { font-weight: 400; font-size: clamp(1.75rem, 2.4vw, 2.4rem); line-height: 1.1; }
+.display em, .title em { font-weight: 400; }
+.lede { font-size: 14px; line-height: 1.75; color: rgba(244, 240, 232, .66); }
+.meta { font-size: 10.5px; letter-spacing: .22em; }
+.btn-lx, .btn-cr-primary, .btn-cr-outline, .btn-cr-danger { font-weight: 400; font-size: 11px; letter-spacing: .26em; padding: 16px 28px; }
+.btn-lx--sm { padding: 12px 20px; }
+.btn-lx--outline, .btn-cr-outline { border-color: rgba(197, 164, 109, .6); color: var(--gold) !important; }
+.btn-lx--outline:hover, .btn-cr-outline:hover { border-color: var(--gold-hi); color: var(--gold-hi) !important; background: rgba(197, 164, 109, .08); }
+.btn-lx--gold:hover, .btn-cr-primary:hover { background: var(--gold-hi); border-color: var(--gold-hi); color: var(--ink) !important; }
+.link-lx { font-weight: 400; font-size: 11px; letter-spacing: .26em; }
+.lx-section { padding: 112px 0; }
+.lx-section--line { border-top-color: rgba(197, 164, 109, .16); }
+.lx-pagehead { border-bottom-color: rgba(197, 164, 109, .18); }
+.lx-pagehead .display { font-size: clamp(2.1rem, 3.4vw, 3.2rem); }
+.lx-card__name { font-size: 23px; margin: 8px 0 16px; }
+.lx-price { font-size: 21px; }
+.lx-price small { color: rgba(197, 164, 109, .75); }
+.lx-card__cta { font-weight: 400; letter-spacing: .26em; }
+.lx-tag { font-weight: 400; }
+.lx-marques .name { font-weight: 400; font-size: clamp(1.5rem, 2.2vw, 2rem); }
+.lx-pillar h3 { font-size: 21px; }
+.lx-pillar .num { font-size: 19px; }
+.lx-detail__title { font-weight: 400; font-size: clamp(2.2rem, 3.2vw, 3rem); }
+.lx-specs dd { font-size: 17px; }
+.lx-auth__form .display { font-size: clamp(2.1rem, 3vw, 2.8rem); }
+.lx-auth__quote p { font-weight: 400; font-size: clamp(1.45rem, 2vw, 1.9rem); }
+.lx-auth__visual img { object-position: 52% 60%; transform: scale(1.35); transform-origin: 45% 62%; filter: none; }
+.cr-panel-header, .lx-field label, .luxury-body .form-group > label { font-weight: 400 !important; }
+.lx-footer { border-top-color: rgba(197, 164, 109, .16); }
+.lx-footer h6 { font-weight: 400; }
+.lx-footer__base { border-top-color: rgba(197, 164, 109, .12); }
+.luxury-body .modal-title { font-size: 22px; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1199.98px) {
   .lx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -422,31 +449,16 @@
   .lx-auth__visual { display: none; }
   .lx-gallery::before { left: -12px; top: 12px; right: 12px; bottom: -12px; }
   .lx-hero__credit { left: 24px; right: auto; text-align: left; }
-  /* Tablet & phone: the photograph leads the first screen as a full-width band, the
-     headline overlaps its lower edge, the search follows below. */
-  .lx-hero { display: block; min-height: 0; padding-top: calc(var(--nav-h) + 33vh); }
-  .lx-hero__media { right: 0; left: 0; bottom: auto; top: calc(var(--nav-h) - 10px); width: 100%; height: 52vh; aspect-ratio: auto; }
-  .lx-hero__media img {
-    object-position: 34% 58%;
-    -webkit-mask-image:
-      linear-gradient(180deg, transparent 0%, #000 22%, #000 62%, transparent 100%),
-      radial-gradient(ellipse 46% 34% at 6% 18%, transparent 35%, #000 100%),
-      radial-gradient(ellipse 30% 26% at 82% 8%, transparent 30%, #000 100%),
-      radial-gradient(ellipse 26% 12% at 36% 15%, transparent 25%, #000 100%);
-    mask-image:
-      linear-gradient(180deg, transparent 0%, #000 22%, #000 62%, transparent 100%),
-      radial-gradient(ellipse 46% 34% at 6% 18%, transparent 35%, #000 100%),
-      radial-gradient(ellipse 30% 26% at 82% 8%, transparent 30%, #000 100%),
-      radial-gradient(ellipse 26% 12% at 36% 15%, transparent 25%, #000 100%);
-    -webkit-mask-composite: source-in, source-in, source-in; mask-composite: intersect;
-  }
-  .lx-hero::after {
-    background:
-      radial-gradient(ellipse 60% 22% at 60% 52%, rgba(197,164,109,.2), transparent 72%),
-      linear-gradient(180deg, rgba(9,9,9,0) 40%, rgba(9,9,9,.75) 62%, var(--ink) 74%);
-  }
-  .lx-hero__content { padding-bottom: 72px; }
-  .lx-hero__credit { position: static; padding: 0 24px 24px; margin: -48px 0 0; }
+  /* Tablet & phone: the showroom photograph becomes a band under the nav,
+     framed on the car, and the copy and search follow below it. */
+  .lx-hero { display: block; min-height: 0; padding-top: calc(var(--nav-h) + 62.5vw - 12px); }
+  .lx-hero__media { inset: auto; top: var(--nav-h); left: 0; right: 0; aspect-ratio: 16 / 10; overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%); mask-image: linear-gradient(180deg, #000 70%, transparent 100%); }
+  .lx-hero__media img { position: absolute; left: 50%; top: 50%; width: 160%; height: auto; object-fit: fill; transform: translate(-51.3%, -55%); animation: none; }
+  .lx-hero::after { background: none; }
+  .lx-hero__content { padding-bottom: 64px; }
+  .lx-hero__title { margin: 22px 0 20px; }
+  .lx-hero__credit { position: static; padding: 0 24px 24px; margin: -40px 0 0; }
   .lx-search { grid-template-columns: 1fr 1fr; margin-top: 36px; }
   .lx-search__field { padding: 16px 18px 14px; border-bottom: 1px solid var(--line); }
   .lx-search__field:nth-child(odd) { border-right: 1px solid var(--line); }
@@ -456,8 +468,8 @@
 @media (max-width: 767.98px) {
   .luxury-body { font-size: 14px; }
   .lx-grid { grid-template-columns: 1fr; gap: 56px; }
-  .lx-hero .eyebrow { letter-spacing: .2em; font-size: 10px; }
-  .lx-hero .display { font-size: 2.55rem; margin: 18px 0 18px; }
+  .lx-hero__eyebrow { letter-spacing: .22em; font-size: 10.5px; }
+  .lx-hero__title { font-size: 2.65rem; }
   .lx-head { margin-bottom: 44px; }
   .lx-cta { padding: 64px 22px; }
   .lx-specs dd { font-size: 17px; }

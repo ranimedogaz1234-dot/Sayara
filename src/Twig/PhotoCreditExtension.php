@@ -28,6 +28,7 @@ final class PhotoCreditExtension extends AbstractExtension
         return [
             new TwigFunction('photo_credit', $this->photoCredit(...)),
             new TwigFunction('photo_credits', $this->photoCredits(...)),
+            new TwigFunction('hero_credit', $this->heroCredit(...)),
         ];
     }
 
@@ -49,6 +50,19 @@ final class PhotoCreditExtension extends AbstractExtension
     public function photoCredits(): array
     {
         return $this->manifest()['photos'] ?? [];
+    }
+
+    /**
+     * Attribution for the homepage hero image (a composite derived from a
+     * Commons photograph), or null when none is recorded.
+     *
+     * @return array{image: string, caption: string, author: string, license: string, licenseUrl: string, sourceUrl: string, commonsFile: string, modification: string}|null
+     */
+    public function heroCredit(): ?array
+    {
+        $hero = $this->manifest()['hero'] ?? null;
+
+        return is_array($hero) ? $hero : null;
     }
 
     /**

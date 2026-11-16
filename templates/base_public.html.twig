@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>{% block title %}CarRent{% endblock %} — CarRent</title>
-    <meta name="description" content="{% block description %}CarRent — a curated fleet of luxury cars, available to rent by the day.{% endblock %}">
+    <title>{% block title %}Sayara{% endblock %} — Sayara</title>
+    <meta name="description" content="{% block description %}Sayara — a curated fleet of luxury cars, available to rent by the day.{% endblock %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/luxury.css') }}">
@@ -20,7 +20,7 @@
 {% set navTransparent = block('nav_transparent') is defined and block('nav_transparent')|trim == 'yes' %}
 <nav class="lx-nav {{ navTransparent ? '' : 'is-solid' }}" data-transparent="{{ navTransparent ? 'true' : 'false' }}" aria-label="Main">
     <div class="container">
-        <a class="lx-brand" href="{{ path('app_home') }}">CarRent</a>
+        <a class="lx-brand" href="{{ path('app_home') }}">Sayara</a>
 
         <button class="lx-burger" type="button" data-toggle="collapse" data-target="#lxNav" aria-controls="lxNav" aria-expanded="false" aria-label="Menu">
             <span></span><span></span>
@@ -28,16 +28,16 @@
 
         <div class="collapse lx-collapse" id="lxNav">
             <ul class="lx-menu">
-                <li><a href="{{ path('app_catalog') }}" class="{{ route in ['app_catalog', 'app_catalog_show'] ? 'is-active' }}">Fleet</a></li>
+                <li><a href="{{ path('app_catalog') }}" class="{{ route in ['app_catalog', 'app_catalog_show'] ? 'is-active' }}">Browse</a></li>
                 <li><a href="{{ path('app_home') }}#marques">Marques</a></li>
                 <li><a href="{{ path('app_about') }}" class="{{ route == 'app_about' ? 'is-active' }}">About</a></li>
-                <li><a href="{{ path('app_contact') }}" class="{{ route == 'app_contact' ? 'is-active' }}">Contact</a></li>
+                <li><a href="{{ path('app_contact') }}" class="{{ route == 'app_contact' ? 'is-active' }}">Concierge</a></li>
             </ul>
 
             <div class="lx-actions">
                 {% if app.user %}
                     <div class="dropdown lx-account">
-                        <button class="btn-lx btn-lx--outline btn-lx--sm dropdown-toggle" type="button" id="lxAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn-lx btn-lx--nav dropdown-toggle" type="button" id="lxAccount" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ is_granted('ROLE_ADMIN') ? 'Dashboard' : 'My account' }}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lxAccount">
@@ -56,7 +56,7 @@
                     </div>
                 {% else %}
                     <a class="lx-signin" href="{{ path('app_login') }}">Sign in</a>
-                    <a class="btn-lx btn-lx--outline btn-lx--sm" href="{{ path('app_signup') }}">Register</a>
+                    <a class="btn-lx btn-lx--nav" href="{{ path('app_signup') }}">Register</a>
                 {% endif %}
             </div>
         </div>
@@ -83,7 +83,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-5 mb-lg-0">
-                <a class="lx-brand" href="{{ path('app_home') }}">CarRent</a>
+                <a class="lx-brand" href="{{ path('app_home') }}">Sayara</a>
                 <p class="mt-4 mb-0" style="max-width: 300px;">A curated fleet of exceptional cars, rented by the day — with transparent pricing and bookings that stay private to you.</p>
             </div>
             <div class="col-6 col-lg-2 offset-lg-1 mb-5 mb-lg-0">
@@ -109,14 +109,14 @@
             <div class="col-lg-3">
                 <h6>Contact</h6>
                 <ul>
-                    <li>contact@carrent.example</li>
+                    <li>contact@sayara.example</li>
                     <li>+33 1 00 00 00 00</li>
                     <li><a href="{{ path('app_contact') }}">Contact page</a></li>
                 </ul>
             </div>
         </div>
         <div class="lx-footer__base">
-            <span>&copy; {{ "now"|date("Y") }} CarRent. All rights reserved.</span>
+            <span>&copy; {{ "now"|date("Y") }} Sayara. All rights reserved.</span>
             <a href="{{ path('app_credits') }}">Photography credits</a>
         </div>
     </div>
@@ -130,7 +130,7 @@
                 <h5 class="modal-title" id="crLogoutTitle">Sign out</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
             </div>
-            <div class="modal-body">Are you sure you want to sign out of CarRent?</div>
+            <div class="modal-body">Are you sure you want to sign out of Sayara?</div>
             <div class="modal-footer">
                 <button class="btn-lx btn-lx--outline btn-lx--sm" type="button" data-dismiss="modal">Cancel</button>
                 <a class="btn-lx btn-lx--gold btn-lx--sm" href="{{ logout_path() }}">Sign out</a>

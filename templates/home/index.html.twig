@@ -4,23 +4,23 @@
 {% block nav_transparent %}yes{% endblock %}
 
 {% block body %}
-{% set heroCredit = photo_credit('preview-rolls-royce-phantom.jpg') %}
+{% set hero = hero_credit() %}
 <section class="lx-hero">
     <div class="lx-hero__media">
-        <img src="{{ asset('images/hero-phantom.jpg') }}" alt="A dark Rolls-Royce Phantom on a reflective showroom floor" fetchpriority="high">
+        <img src="{{ asset('images/hero-cullinan.jpg') }}" alt="A black Rolls-Royce Cullinan in a dark showroom, lit in warm gold" fetchpriority="high">
     </div>
 
     <div class="lx-hero__content">
         <div class="container">
-            <span class="eyebrow cr-reveal cr-visible">Private fleet &middot; Daily rental &middot; Drive yourself</span>
-            <h1 class="display cr-reveal cr-visible">Drive the world's<br><em>most desirable</em> cars</h1>
-            <p class="lede cr-reveal cr-visible">A curated collection of exceptional cars, available by the day — reserved online, priced transparently.</p>
+            <span class="lx-hero__eyebrow">London <i>&middot;</i> Dubai <i>&middot;</i> Worldwide</span>
+            <h1 class="lx-hero__title">Discover the<br>world's<br><em>most desirable</em> cars</h1>
+            <p class="lx-hero__lede">Curated luxury, exotic and prestige vehicles, reserved online and rented by the day.</p>
 
             {# Every field maps to a real filter in HomeController::catalog():
-               make -> brand, model -> q (brand/model search), and the two
-               dates are validated server-side and carried through to the
-               booking form. No location filter: Voiture has no location. #}
-            <form class="lx-search cr-reveal cr-visible" action="{{ path('app_catalog') }}" method="get">
+               make -> brand, model -> q (brand/model search), price -> maxPrice
+               (daily rate), and the pick-up date is validated server-side and
+               carried through to the booking form. #}
+            <form class="lx-search lx-search--hero" action="{{ path('app_catalog') }}" method="get">
                 <div class="lx-search__field">
                     <label for="sBrand">Make</label>
                     <select id="sBrand" name="brand">
@@ -33,20 +33,24 @@
                     <input type="text" id="sQ" name="q" placeholder="Any model" autocomplete="off">
                 </div>
                 <div class="lx-search__field">
-                    <label for="sPick">Pick-up</label>
-                    <input type="date" id="sPick" name="pickupDate" min="{{ 'now'|date('Y-m-d') }}">
+                    <label for="sPrice">Price</label>
+                    <select id="sPrice" name="maxPrice">
+                        <option value="">Any price</option>
+                        {% for step in priceSteps %}<option value="{{ step }}">Up to {{ step|usd }} / day</option>{% endfor %}
+                    </select>
                 </div>
                 <div class="lx-search__field">
-                    <label for="sReturn">Return</label>
-                    <input type="date" id="sReturn" name="returnDate" min="{{ 'now'|date('Y-m-d') }}">
+                    <label for="sPick">Pick-up</label>
+                    <input type="text" id="sPick" name="pickupDate" placeholder="Any date" min="{{ 'now'|date('Y-m-d') }}"
+                           onfocus="this.type='date'" onblur="if (!this.value) { this.type='text'; }">
                 </div>
-                <button type="submit" class="lx-search__submit"><i class="fas fa-search" aria-hidden="true"></i> Search</button>
+                <button type="submit" class="lx-search__submit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5.5 5.5"/></svg> Search</button>
             </form>
         </div>
     </div>
 
-    {% if heroCredit %}
-        <p class="lx-hero__credit">Rolls-Royce Phantom &middot; Photo {{ heroCredit.author }}, <a href="{{ heroCredit.licenseUrl }}" rel="license noopener" target="_blank">{{ heroCredit.license }}</a></p>
+    {% if hero %}
+        <p class="lx-hero__credit">{{ hero.caption }} &middot; after a photo by {{ hero.author }}, <a href="{{ hero.licenseUrl }}" rel="license noopener" target="_blank">{{ hero.license }}</a></p>
     {% endif %}
 </section>
 
@@ -101,7 +105,7 @@
     <div class="container">
         <div class="lx-head cr-reveal">
             <div>
-                <span class="eyebrow eyebrow--rule">The CarRent standard</span>
+                <span class="eyebrow eyebrow--rule">The Sayara standard</span>
                 <h2 class="title">Simple, <em>by design</em></h2>
             </div>
         </div>
