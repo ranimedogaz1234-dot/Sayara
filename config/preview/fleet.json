@@ -1,6 +1,15 @@
 {
-    "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits.",
-    "hero": "preview-rolls-royce-phantom.jpg",
+    "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Prices are daily rates in US dollars. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits.",
+    "hero": {
+        "image": "hero-cullinan.jpg",
+        "caption": "Rolls-Royce Cullinan Black Badge",
+        "commonsFile": "File:2021 Rolls-Royce Cullinan Black Badge - 03.jpg",
+        "author": "Oleg Yunakov",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2021_Rolls-Royce_Cullinan_Black_Badge_-_03.jpg",
+        "modification": "Cut out, recoloured to black and composited into a rendered showroom; the composite is shared under the same licence."
+    },
     "photos": {
         "preview-rolls-royce-phantom.jpg": {
             "commonsFile": "File:Rolls-Royce Phantom, Geneva International Motor Show 2018, Le Grand-Saconnex (1X7A1220).jpg",
@@ -50,6 +59,27 @@
             "license": "CC BY-SA 4.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_G-Class_W463_II_63_AMG_Xiamen_01_2022-06-04.jpg"
+        },
+        "preview-bugatti-chiron.jpg": {
+            "commonsFile": "File:Bugatti Chiron With Lights.jpg",
+            "author": "MrWalkr",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bugatti_Chiron_With_Lights.jpg"
+        },
+        "preview-porsche-911-pink.jpg": {
+            "commonsFile": "File:Porsche 911 Carrera RS, pink.jpg",
+            "author": "Cjp24",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Porsche_911_Carrera_RS,_pink.jpg"
+        },
+        "preview-tesla-model-s-plaid.jpg": {
+            "commonsFile": "File:Tesla Model S Plaid Autofrühling Ulm IMG 9278 (cropped).jpg",
+            "author": "Alexander-93",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tesla_Model_S_Plaid_Autofrühling_Ulm_IMG_9278_(cropped).jpg"
         }
     },
     "vehicles": [
@@ -101,6 +131,27 @@
             "prixParJour": 2400,
             "disponible": false,
             "image": "preview-mercedes-g-class.jpg"
+        },
+        {
+            "marque": "Bugatti",
+            "modele": "Chiron",
+            "prixParJour": 15000,
+            "disponible": true,
+            "image": "preview-bugatti-chiron.jpg"
+        },
+        {
+            "marque": "Porsche",
+            "modele": "911 Carrera RS Pink",
+            "prixParJour": 1900,
+            "disponible": true,
+            "image": "preview-porsche-911-pink.jpg"
+        },
+        {
+            "marque": "Tesla",
+            "modele": "Model S Plaid",
+            "prixParJour": 450,
+            "disponible": true,
+            "image": "preview-tesla-model-s-plaid.jpg"
         }
     ]
 }
