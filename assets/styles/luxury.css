@@ -238,6 +238,21 @@
 .lx-hero__credit a { color: rgba(244,240,232,.45); }
 .lx-hero .lx-search { margin-top: 52px; max-width: 920px; background: rgba(16, 13, 11, .55); border-color: rgba(216, 188, 134, .14); }
 
+/* Desktop: the room is extended beyond the photograph, in focus -- curtain,
+   cove light, ceiling and floor continued in the photo's own perspective
+   from its own pixels (the photo sits inside, unchanged) -- so the page to
+   the left of the car is the same showroom rather than a soft blur. */
+@media (min-width: 992px) {
+  .lx-hero__media::before { inset: -27.907% 0 -46.512% -63.517%; background: var(--hero-scene) center / 100% 100% no-repeat; }
+  .lx-hero__media img { -webkit-mask: none; mask: none; animation: none; }
+  /* a soft pool of shade behind the copy only, so small type stays legible
+     over the light fabric at the foot of the curtain */
+  .lx-hero__copy { position: relative; }
+  .lx-hero__copy::before { content: ''; position: absolute; inset: -70px -120px -60px -90px; z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(12,11,10,.5), rgba(12,11,10,.28) 55%, rgba(12,11,10,0)); }
+  .lx-hero__eyebrow, .lx-hero__lede { text-shadow: 0 1px 10px rgba(10,9,8,.7); }
+}
+
 /* Search panel (hero + catalog) */
 .lx-search {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
