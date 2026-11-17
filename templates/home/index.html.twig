@@ -6,15 +6,20 @@
 {% block body %}
 {% set hero = hero_credit() %}
 <section class="lx-hero">
-    <div class="lx-hero__media">
-        <img src="{{ asset('images/hero-cullinan.jpg') }}" alt="A black Rolls-Royce Cullinan in a dark showroom, lit in warm gold" fetchpriority="high">
+    {# The ambient layer is this same photograph, extended and heavily
+       blurred, so the room's own light continues past every edge; the mask
+       keeps the car sharp and lets the rest of the room fall off into it. #}
+    <div class="lx-hero__media" style="--hero-ambient: url('{{ asset('images/hero-ambient.jpg') }}'); --hero-mask: url('{{ asset('images/hero-mask.png') }}')">
+        <img src="{{ asset('images/hero-showroom.jpg') }}" alt="A Rolls-Royce Cullinan in a dark wood-panelled showroom" width="1291" height="860" fetchpriority="high">
     </div>
 
     <div class="lx-hero__content">
         <div class="container">
+            <div class="lx-hero__copy">
             <span class="lx-hero__eyebrow">London <i>&middot;</i> Dubai <i>&middot;</i> Worldwide</span>
-            <h1 class="lx-hero__title">Discover the<br>world's<br><em>most desirable</em> cars</h1>
+            <h1 class="lx-hero__title">Discover the world's<br><em>most desirable</em> cars</h1>
             <p class="lx-hero__lede">Curated luxury, exotic and prestige vehicles, reserved online and rented by the day.</p>
+            </div>
 
             {# Every field maps to a real filter in HomeController::catalog():
                make -> brand, model -> q (brand/model search), price -> maxPrice
