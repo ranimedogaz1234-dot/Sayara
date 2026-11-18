@@ -1,58 +1,27 @@
-{% extends 'base.html.twig' %}
-{% block title %}Modifier Réservation #{{ reservation.id }}{% endblock %}
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Edit booking #{{ '%04d'|format(reservation.id) }}{% endblock %}
+
 {% block body %}
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-calendar-edit text-warning mr-2"></i>Modifier la Réservation #{{ reservation.id }}</h1>
-    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary shadow-sm"><i class="fas fa-arrow-left fa-sm mr-1"></i>Retour</a>
-</div>
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-warning text-dark"><h6 class="m-0 font-weight-bold"><i class="fas fa-calendar mr-2"></i>Réservation #{{ reservation.id }}</h6></div>
-            <div class="card-body p-4">
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Booking #' ~ '%04d'|format(reservation.id),
+    title: 'Edit',
+    em: 'booking',
+    lede: 'The total is recalculated from the new dates and the car\'s daily rate.',
+    compact: true,
+} %}
 
-                {% if is_granted('ROLE_ADMIN') %}
-                <div class="form-group">
-                    <label class="font-weight-bold text-gray-700"><i class="fas fa-user mr-1 text-success"></i> Client</label>
-                    {{ form_widget(form.client, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.client) }}
-                </div>
-                {% endif %}
-
-                <div class="form-group">
-                    <label class="font-weight-bold text-gray-700"><i class="fas fa-car mr-1 text-primary"></i> Voiture</label>
-                    {{ form_widget(form.voiture, {'attr': {'class': 'form-control'}}) }}
-                    {{ form_errors(form.voiture) }}
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700"><i class="fas fa-calendar-day mr-1 text-success"></i> Date Début</label>
-                            {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.dateDebut) }}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700"><i class="fas fa-calendar-day mr-1 text-danger"></i> Date Fin</label>
-                            {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.dateFin) }}
-                        </div>
-                    </div>
-                </div>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Le prix total sera recalculé automatiquement en fonction des dates et du prix journalier de la voiture.
-                </div>
-                <hr class="my-4">
-                <div class="d-flex justify-content-between">
-                    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary"><i class="fas fa-times mr-1"></i>Annuler</a>
-                    <button type="submit" class="btn btn-warning px-4"><i class="fas fa-save mr-1"></i>Enregistrer</button>
-                </div>
-                {{ form_end(form) }}
+<section class="lx-section--tight">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="cr-panel cr-reveal cr-visible"><div class="cr-panel-body">
+                    {% include 'reservation/_booking_form.html.twig' with {submit_label: 'Save changes', cancel_path: path('app_reservation_show', {id: reservation.id})} %}
+                </div></div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
+
+{% block javascripts %}{% include 'reservation/_price_preview.html.twig' %}{% endblock %}

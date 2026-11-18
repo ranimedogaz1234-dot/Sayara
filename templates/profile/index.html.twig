@@ -1,129 +1,66 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
-{% block title %}Mon Compte — CarRent{% endblock %}
+{% block title %}My account{% endblock %}
 
 {% block body %}
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'My account',
+    title: 'Welcome,',
+    em: app.user.nom,
+    lede: 'Your details and every booking you have made, in one place.',
+    compact: true,
+} %}
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">
-        <i class="fas fa-user-circle text-info mr-2"></i>Mon Compte
-    </h1>
-    <a href="{{ path('app_home') }}" class="btn btn-secondary shadow-sm">
-        <i class="fas fa-arrow-left mr-1"></i>Retour à l'accueil
-    </a>
-</div>
-
-<div class="row">
-    <!-- Profile Card -->
-    <div class="col-lg-4">
-        <div class="card shadow mb-4 border-left-info">
-            <div class="card-header py-3 bg-info text-white">
-                <h6 class="m-0 font-weight-bold">
-                    <i class="fas fa-id-card mr-2"></i>Informations Personnelles
-                </h6>
+<section class="lx-section--tight">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <div class="cr-panel cr-reveal cr-visible">
+                    <div class="cr-panel-header">Profile</div>
+                    <div class="cr-panel-body">
+                        <dl class="lx-specs mt-0 mb-4">
+                            <div><dt>Name</dt><dd>{{ app.user.nom }}</dd></div>
+                            <div><dt>Username</dt><dd>{{ app.user.username }}</dd></div>
+                            <div><dt>Email</dt><dd style="font-family:var(--sans);font-size:14px;word-break:break-all;">{{ app.user.email }}</dd></div>
+                        </dl>
+                        <a href="{{ path('app_profile_edit') }}" class="btn-lx btn-lx--outline btn-lx--block mb-3">Edit profile</a>
+                        <a href="#" data-toggle="modal" data-target="#crLogoutModal" class="btn-cr-danger btn-lx--block">Sign out</a>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    <img class="img-profile rounded-circle" width="80" height="80"
-                         src="https://ui-avatars.com/api/?name={{ app.user.nom }}&background=4e73df&color=fff&size=200">
+
+            <div class="col-lg-8">
+                <div class="cr-panel cr-reveal cr-visible">
+                    <div class="cr-panel-header d-flex align-items-center justify-content-between">
+                        <span>My bookings &middot; {{ '%02d'|format(reservations|length) }}</span>
+                        <a href="{{ path('app_catalog') }}" class="link-lx" style="padding-bottom:4px;">Book a car <span class="arrow">&rarr;</span></a>
+                    </div>
+                    {% if reservations|length == 0 %}
+                        <div class="cr-panel-body text-center py-5">
+                            <p class="title mb-4" style="font-size:1.8rem;">No bookings <em>yet</em></p>
+                            <a href="{{ path('app_catalog') }}" class="btn-lx btn-lx--gold">Explore the fleet</a>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="cr-table cr-table--stack">
+                                <thead><tr><th>Ref.</th><th>Car</th><th>Dates</th><th>Total</th><th></th></tr></thead>
+                                <tbody>
+                                {% for reservation in reservations %}
+                                    <tr>
+                                        <td data-label="Ref." class="meta" style="color:var(--gold);">#{{ '%04d'|format(reservation.id) }}</td>
+                                        <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
+                                        <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
+                                        <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|usd }}</td>
+                                        <td class="text-right cr-table__actions"><a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="link-lx" style="padding-bottom:4px;">View <span class="arrow">&rarr;</span></a></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
                 </div>
-                <table class="table table-borderless">
-                    <tr>
-                        <th class="text-gray-600" width="40%"><i class="fas fa-user mr-2 text-primary"></i>Nom</th>
-                        <td><strong>{{ app.user.nom }}</strong></td>
-                    </tr>
-                    <tr>
-                        <th class="text-gray-600"><i class="fas fa-user-tag mr-2 text-primary"></i>Utilisateur</th>
-                        <td><strong>{{ app.user.username }}</strong></td>
-                    </tr>
-                    <tr>
-                        <th class="text-gray-600"><i class="fas fa-envelope mr-2 text-primary"></i>Email</th>
-                        <td><strong>{{ app.user.email }}</strong></td>
-                    </tr>
-                </table>
-                <hr>
-                <div class="d-flex gap-2">
-                    <a href="{{ path('app_profile_edit') }}" class="btn btn-sm btn-warning w-50">
-                        <i class="fas fa-edit mr-1"></i>Modifier
-                    </a>
-                    <a href="{{ logout_path() }}" class="btn btn-sm btn-danger w-50">
-                        <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
-                    </a>
-                </div>
+            </div>
         </div>
-
-    <!-- Reservations -->
-    <div class="col-lg-8">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-warning">
-                    <i class="fas fa-calendar-alt mr-2"></i>Mes Réservations
-                    <span class="badge badge-warning text-dark ml-2">{{ reservations|length }}</span>
-                </h6>
-                <a href="{{ path('app_reservation_new') }}" class="btn btn-sm btn-warning">
-                    <i class="fas fa-plus-circle mr-1"></i>Nouvelle Réservation
-                </a>
-            </div>
-            <div class="card-body">
-                {% if reservations|length == 0 %}
-                    <div class="text-center py-5 text-muted">
-                        <i class="fas fa-calendar-times fa-4x mb-3 opacity-50"></i>
-                        <p class="h5">Aucune réservation enregistrée.</p>
-                        <a href="{{ path('app_reservation_new') }}" class="btn btn-warning mt-2">
-                            <i class="fas fa-plus mr-1"></i>Créer une réservation
-                        </a>
-                    </div>
-                {% else %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover" width="100%">
-                            <thead class="thead-light">
-                            <tr>
-                                <th width="60" class="text-center">#</th>
-                                <th>Voiture</th>
-                                <th>Date Début</th>
-                                <th>Date Fin</th>
-                                <th>Prix Total</th>
-                                <th width="100" class="text-center">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for reservation in reservations %}
-                                <tr>
-                                    <td class="text-center font-weight-bold text-warning">{{ reservation.id }}</td>
-                                    <td>
-                                        <i class="fas fa-car text-muted mr-1"></i>
-                                        <strong>{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</strong>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-light border">
-                                            <i class="fas fa-calendar-day mr-1 text-success"></i>
-                                            {{ reservation.dateDebut|date('d/m/Y') }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-light border">
-                                            <i class="fas fa-calendar-day mr-1 text-danger"></i>
-                                            {{ reservation.dateFin|date('d/m/Y') }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-warning text-dark px-3 py-2">
-                                            <strong>{{ reservation.prixTotal }} DT</strong>
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ path('app_reservation_show', {id: reservation.id}) }}"
-                                           class="btn btn-info btn-sm" title="Voir détails">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-            </div>
     </div>
-
+</section>
 {% endblock %}

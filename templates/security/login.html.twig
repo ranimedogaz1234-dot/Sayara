@@ -1,175 +1,46 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>CarRent — Connexion</title>
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/css/sb-admin-2.min.css" rel="stylesheet">
-    <style>
-        body { background: linear-gradient(135deg, #1a3c6b 0%, #4e73df 100%); min-height: 100vh; }
-        .login-card { border-radius: 1rem; overflow: hidden; }
-        .login-card .card-header { background: linear-gradient(135deg, #1a3c6b, #4e73df); }
-        .car-icon { font-size: 4rem; color: rgba(255,255,255,0.9); }
-        .btn-login { background: linear-gradient(135deg, #1a3c6b, #4e73df); border: none; border-radius: .5rem; padding: .75rem; font-size: 1rem; font-weight: 700; letter-spacing: .05rem; }
-        .btn-login:hover { background: linear-gradient(135deg, #4e73df, #1a3c6b); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(78,115,223,.4); }
-        .form-control-user { border-radius: .5rem; padding: .75rem 1rem; font-size: .95rem; }
-        .form-control-user:focus { border-color: #4e73df; box-shadow: 0 0 0 0.2rem rgba(78,115,223,.25); }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
-        <div class="col-xl-5 col-lg-6 col-md-8">
+{% extends 'base_public.html.twig' %}
 
-            <div class="card shadow-lg login-card border-0">
+{% block title %}Sign in{% endblock %}
 
-                <!-- Card Header -->
-                <div class="card-header py-4 text-center border-0">
-                    <div class="car-icon mb-2">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <h2 class="text-white font-weight-bold mb-0">CarRent</h2>
-                    <p class="text-white-50 small mb-0">Système de Gestion de Location</p>
-                </div>
-
-                <!-- Card Body -->
-                <div class="card-body p-5">
-                    <ul class="nav nav-tabs mb-4" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" id="client-tab" data-toggle="tab" href="#client-login" role="tab" aria-controls="client-login" aria-selected="true">
-                                <i class="fas fa-user mr-2"></i>Client
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="admin-tab" data-toggle="tab" href="#admin-login" role="tab" aria-controls="admin-login" aria-selected="false">
-                                <i class="fas fa-user-shield mr-2"></i>Admin
-                            </a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <!-- Client Login Tab -->
-                        <div class="tab-pane fade show active" id="client-login" role="tabpanel" aria-labelledby="client-tab">
-                            <h4 class="text-center text-gray-900 mb-4">
-                                <i class="fas fa-lock text-primary mr-2"></i>Connexion Client
-                            </h4>
-
-                            {% if error %}
-                                <div class="alert alert-danger">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    {{ error.messageKey|trans(error.messageData, 'security') }}
-                                </div>
-                            {% endif %}
-
-                            <form action="{{ path('app_login') }}" method="post">
-
-                                <div class="form-group">
-                                    <label for="inputUsername" class="font-weight-bold text-gray-700">
-                                        <i class="fas fa-user mr-1 text-primary"></i> Nom d'utilisateur
-                                    </label>
-                                    <input type="text" class="form-control form-control-user"
-                                           id="inputUsername" name="username"
-                                           value="{{ last_username }}"
-                                           placeholder="Entrez votre nom d'utilisateur..."
-                                           autocomplete="username" required autofocus>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="inputPassword" class="font-weight-bold text-gray-700">
-                                        <i class="fas fa-key mr-1 text-primary"></i> Mot de Passe
-                                    </label>
-                                    <input type="password" class="form-control form-control-user"
-                                           id="inputPassword" name="password"
-                                           placeholder="Entrez votre mot de passe..."
-                                           autocomplete="current-password" required>
-                                </div>
-
-                                <div class="form-group d-flex align-items-center justify-content-between mb-4">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
-                                        <label class="custom-control-label text-gray-600" for="rememberMe">
-                                            Se souvenir de moi
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                                <button type="submit" class="btn btn-primary btn-login btn-block text-white">
-                                    <i class="fas fa-sign-in-alt mr-2"></i> Se Connecter
-                                </button>
-
-                            </form>
-                        </div>
-
-                        <!-- Admin Login Tab -->
-                        <div class="tab-pane fade" id="admin-login" role="tabpanel" aria-labelledby="admin-tab">
-                            <h4 class="text-center text-gray-900 mb-4">
-                                <i class="fas fa-lock text-danger mr-2"></i>Connexion Admin
-                            </h4>
-
-                            {% if error %}
-                                <div class="alert alert-danger">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    {{ error.messageKey|trans(error.messageData, 'security') }}
-                                </div>
-                            {% endif %}
-
-                            <form action="{{ path('app_login') }}" method="post">
-
-                                <div class="form-group">
-                                    <label for="adminUsername" class="font-weight-bold text-gray-700">
-                                        <i class="fas fa-user mr-1 text-danger"></i> Nom d'utilisateur Admin
-                                    </label>
-                                    <input type="text" class="form-control form-control-user"
-                                           id="adminUsername" name="username"
-                                           placeholder="admin"
-                                           autocomplete="username" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="adminPassword" class="font-weight-bold text-gray-700">
-                                        <i class="fas fa-key mr-1 text-danger"></i> Mot de Passe
-                                    </label>
-                                    <input type="password" class="form-control form-control-user"
-                                           id="adminPassword" name="password"
-                                           placeholder="Entrez le mot de passe admin..."
-                                           autocomplete="current-password" required>
-                                </div>
-
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                                <button type="submit" class="btn btn-danger btn-login btn-block text-white">
-                                    <i class="fas fa-sign-in-alt mr-2"></i> Connexion Admin
-                                </button>
-
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card Footer -->
-                <div class="card-footer text-center py-3 bg-light">
-                    <small class="text-muted d-block mb-2">
-                        <i class="fas fa-user-plus mr-1"></i>
-                        Pas encore de compte?
-                        <a href="{{ path('app_signup') }}" class="font-weight-bold">S'inscrire</a>
-                    </small>
-                    <small class="text-muted">
-                        <a href="{{ path('app_home') }}" class="text-primary">← Retour à l'accueil</a>
-                    </small>
-                </div>
-
-            </div>
+{% block body %}
+<div class="lx-auth">
+    <aside class="lx-auth__visual" aria-hidden="true">
+        <img src="{{ asset('images/hero-showroom.jpg') }}" alt="">
+        <div class="lx-auth__quote">
+            <span class="eyebrow eyebrow--rule">Sayara</span>
+            <p>Your next drive is <em>already waiting</em>.</p>
         </div>
-    </div>
-</div>
+    </aside>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <section class="lx-auth__panel">
+        <div class="lx-auth__form cr-reveal cr-visible">
+            <span class="eyebrow eyebrow--rule">Welcome back</span>
+            <h1 class="display">Sign <em>in</em></h1>
+            <p class="lede mb-5">Access your bookings and reserve your next car.</p>
+
+            {% if error %}
+                <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <form action="{{ path('app_login') }}" method="post">
+                <div class="form-group lx-field">
+                    <label for="username">Username</label>
+                    <input type="text" class="lx-input" id="username" name="username" value="{{ last_username }}" autocomplete="username" required autofocus>
+                </div>
+                <div class="form-group lx-field">
+                    <label for="password">Password</label>
+                    <input type="password" class="lx-input" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <div class="custom-control custom-checkbox mb-5">
+                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
+                    <label class="custom-control-label" for="rememberMe">Keep me signed in</label>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn-lx btn-lx--gold btn-lx--block">Sign in</button>
+            </form>
+
+            <p class="lx-auth__switch">New to Sayara? <a href="{{ path('app_signup') }}">Create an account</a></p>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{
+    "_about": "Synthetic preview fleet for var/preview.db only (bin/console app:preview:seed). Never loaded into var/data.db. Prices are daily rates in US dollars. Photos are from Wikimedia Commons under the licenses listed; they are downloaded at seed time into public/uploads/voitures/ (git-ignored) and credited on /credits. Photos marked localFile were supplied by the site owner and are copied from config/preview/photos/; vehicles under \"retired\" are removed from var/preview.db (or marked unavailable if they have bookings).",
+    "photos": {
+        "preview-rolls-royce-phantom.jpg": {
+            "commonsFile": "File:Rolls-Royce Phantom, Geneva International Motor Show 2018, Le Grand-Saconnex (1X7A1220).jpg",
+            "author": "Matti Blume",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rolls-Royce_Phantom,_Geneva_International_Motor_Show_2018,_Le_Grand-Saconnex_(1X7A1220).jpg"
+        },
+        "preview-mercedes-s-class.jpg": {
+            "commonsFile": "File:Mercedes-Benz W223 1X7A7340.jpg",
+            "author": "Alexander-93",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_W223_1X7A7340.jpg"
+        },
+        "preview-bmw-7-series.jpg": {
+            "commonsFile": "File:BMW 7 SERIES LWB (F01) China (7).jpg",
+            "author": "Dinkun Chen",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:BMW_7_SERIES_LWB_(F01)_China_(7).jpg"
+        },
+        "preview-porsche-911.jpg": {
+            "commonsFile": "File:Porsche 911 Carrera 4S Cabriolet 992 black (1).jpg",
+            "author": "Damian B Oh",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Porsche_911_Carrera_4S_Cabriolet_992_black_(1).jpg"
+        },
+        "preview-range-rover.jpg": {
+            "commonsFile": "File:Land Rover Range Rover P530 Autobiography LWB L460 Santorini Black (4).jpg",
+            "author": "Damian B Oh",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Land_Rover_Range_Rover_P530_Autobiography_LWB_L460_Santorini_Black_(4).jpg"
+        },
+        "preview-audi-a8.jpg": {
+            "commonsFile": "File:Audi A8 L 55 TFSI quattro S Line D5 Mythos Black Metallic (33).jpg",
+            "author": "Damian B Oh",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Audi_A8_L_55_TFSI_quattro_S_Line_D5_Mythos_Black_Metallic_(33).jpg"
+        },
+        "preview-mercedes-g-class.jpg": {
+            "commonsFile": "File:Mercedes-Benz G-Class W463 II 63 AMG Xiamen 01 2022-06-04.jpg",
+            "author": "JamesYoung8167",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_G-Class_W463_II_63_AMG_Xiamen_01_2022-06-04.jpg"
+        },
+        "preview-bugatti-chiron.jpg": {
+            "commonsFile": "File:Bugatti Chiron With Lights.jpg",
+            "author": "MrWalkr",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bugatti_Chiron_With_Lights.jpg"
+        },
+        "preview-tesla-model-s-plaid.jpg": {
+            "commonsFile": "File:Tesla Model S Plaid Autofrühling Ulm IMG 9278 (cropped).jpg",
+            "author": "Alexander-93",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tesla_Model_S_Plaid_Autofrühling_Ulm_IMG_9278_(cropped).jpg"
+        },
+        "preview-cullinan-emerald.jpg": {
+            "localFile": "config/preview/photos/preview-cullinan-emerald.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-urus-grey.jpg": {
+            "localFile": "config/preview/photos/preview-urus-grey.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-urus-black.jpg": {
+            "localFile": "config/preview/photos/preview-urus-black.jpg",
+            "source": "Supplied by the site owner"
+        },
+        "preview-cullinan-black-gold.jpg": {
+            "localFile": "config/preview/photos/preview-cullinan-black-gold.jpg",
+            "source": "Supplied by the site owner"
+        }
+    },
+    "vehicles": [
+        {
+            "marque": "Rolls-Royce",
+            "modele": "Phantom",
+            "prixParJour": 4800,
+            "disponible": true,
+            "image": "preview-rolls-royce-phantom.jpg"
+        },
+        {
+            "marque": "Mercedes-Benz",
+            "modele": "S-Class",
+            "prixParJour": 1600,
+            "disponible": true,
+            "image": "preview-mercedes-s-class.jpg"
+        },
+        {
+            "marque": "BMW",
+            "modele": "7 Series",
+            "prixParJour": 1450,
+            "disponible": true,
+            "image": "preview-bmw-7-series.jpg"
+        },
+        {
+            "marque": "Porsche",
+            "modele": "911 Carrera 4S Cabriolet",
+            "prixParJour": 2200,
+            "disponible": true,
+            "image": "preview-porsche-911.jpg"
+        },
+        {
+            "marque": "Land Rover",
+            "modele": "Range Rover Autobiography",
+            "prixParJour": 1900,
+            "disponible": true,
+            "image": "preview-range-rover.jpg"
+        },
+        {
+            "marque": "Audi",
+            "modele": "A8 L",
+            "prixParJour": 1350,
+            "disponible": true,
+            "image": "preview-audi-a8.jpg"
+        },
+        {
+            "marque": "Mercedes-Benz",
+            "modele": "G 63 AMG",
+            "prixParJour": 2400,
+            "disponible": false,
+            "image": "preview-mercedes-g-class.jpg"
+        },
+        {
+            "marque": "Bugatti",
+            "modele": "Chiron",
+            "prixParJour": 15000,
+            "disponible": true,
+            "image": "preview-bugatti-chiron.jpg"
+        },
+        {
+            "marque": "Tesla",
+            "modele": "Model S Plaid",
+            "prixParJour": 450,
+            "disponible": true,
+            "image": "preview-tesla-model-s-plaid.jpg"
+        },
+        {
+            "marque": "Rolls-Royce",
+            "modele": "Cullinan — Emerald Green",
+            "prixParJour": 1800,
+            "disponible": true,
+            "image": "preview-cullinan-emerald.jpg"
+        },
+        {
+            "marque": "Lamborghini",
+            "modele": "Urus — Grey",
+            "prixParJour": 1400,
+            "disponible": true,
+            "image": "preview-urus-grey.jpg"
+        },
+        {
+            "marque": "Lamborghini",
+            "modele": "Urus — Black",
+            "prixParJour": 1500,
+            "disponible": true,
+            "image": "preview-urus-black.jpg"
+        },
+        {
+            "marque": "Rolls-Royce",
+            "modele": "Cullinan — Black & Gold",
+            "prixParJour": 2200,
+            "disponible": true,
+            "image": "preview-cullinan-black-gold.jpg"
+        }
+    ],
+    "retired": [
+        {
+            "marque": "Porsche",
+            "modele": "911 Carrera RS Pink"
+        }
+    ]
+}

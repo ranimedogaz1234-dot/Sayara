@@ -1,0 +1,36 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block body %}
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Contact',
+    title: 'We are',
+    em: 'at your disposal',
+    lede: 'For any question about a car or a booking, reach us directly.',
+} %}
+
+{# Contact details only - there is no message form, because there is no
+   backend to receive one. #}
+<section class="lx-section">
+    <div class="container">
+        <div class="lx-pillars cr-reveal">
+            <div class="lx-pillar">
+                <span class="num">Email</span>
+                <h3>contact@sayara.example</h3>
+                <p>We reply to every message.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">Telephone</span>
+                <h3>+33 1 00 00 00 00</h3>
+                <p>For questions about an existing booking.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">Your bookings</span>
+                <h3>Online, any time</h3>
+                <p>{% if app.user %}<a class="link-lx mt-2" href="{{ path('app_reservation_index') }}">View my bookings <span class="arrow">&rarr;</span></a>{% else %}<a class="link-lx mt-2" href="{{ path('app_login') }}">Sign in <span class="arrow">&rarr;</span></a>{% endif %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

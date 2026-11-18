@@ -1,139 +1,86 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_public.html.twig' %}
 
-{% block title %}Liste des Réservations{% endblock %}
+{% block title %}{{ is_granted('ROLE_ADMIN') ? 'All reservations' : 'My bookings' }}{% endblock %}
 
 {% block body %}
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: is_granted('ROLE_ADMIN') ? 'Administration' : 'My account',
+    title: is_granted('ROLE_ADMIN') ? 'All' : 'My',
+    em: is_granted('ROLE_ADMIN') ? 'reservations' : 'bookings',
+    lede: reservations|length ~ (reservations|length == 1 ? ' booking' : ' bookings') ~ (is_granted('ROLE_ADMIN') ? ' across all clients.' : ' on your account.'),
+    compact: true,
+} %}
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">
-        <i class="fas fa-calendar-alt text-warning mr-2"></i>Liste des Réservations
-    </h1>
-    <a href="{{ path('app_reservation_new') }}" class="btn btn-warning shadow-sm">
-        <i class="fas fa-plus-circle fa-sm mr-1"></i> Nouvelle Réservation
-    </a>
-</div>
-
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-warning">
-            <i class="fas fa-table mr-2"></i>Réservations Enregistrées
-            <span class="badge badge-warning text-dark ml-2">{{ reservations|length }}</span>
-        </h6>
-    </div>
-    <div class="card-body">
-        {% if reservations|length == 0 %}
-            <div class="text-center py-5 text-muted">
-                <i class="fas fa-calendar-times fa-4x mb-3"></i>
-                <p class="h5">Aucune réservation enregistrée.</p>
-                <a href="{{ path('app_reservation_new') }}" class="btn btn-warning mt-2">
-                    <i class="fas fa-plus mr-1"></i>Créer la première réservation
-                </a>
-            </div>
-        {% else %}
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="dataTable" width="100%">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th width="60">#</th>
-                        <th>Client</th>
-                        <th>Voiture</th>
-                        <th>Date Début</th>
-                        <th>Date Fin</th>
-                        <th>Prix Total</th>
-                        <th>Statut</th>
-                        <th width="220" class="text-center">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for reservation in reservations %}
+<section class="lx-section--tight">
+    <div class="container">
+        <div class="d-flex justify-content-end mb-4">
+            <a href="{{ path('app_reservation_new') }}" class="btn-lx btn-lx--gold btn-lx--sm">New booking</a>
+        </div>
+        <div class="cr-panel cr-reveal cr-visible">
+            {% if reservations|length == 0 %}
+                <div class="cr-panel-body text-center py-5">
+                    <p class="title mb-4" style="font-size:1.8rem;">No bookings <em>yet</em></p>
+                    <a href="{{ path('app_catalog') }}" class="btn-lx btn-lx--outline">Explore the fleet</a>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="cr-table cr-table--stack">
+                        <thead>
                         <tr>
-                            <td class="text-center font-weight-bold text-warning">{{ reservation.id }}</td>
-                            <td>
-                                <i class="fas fa-user text-muted mr-1"></i>
-                                <strong>{{ reservation.client.nom }}</strong>
-                            </td>
-                            <td>
-                                <i class="fas fa-car text-muted mr-1"></i>
-                                {{ reservation.voiture.marque }} {{ reservation.voiture.modele }}
-                            </td>
-                            <td>
-                                <span class="badge badge-light border">
-                                    <i class="fas fa-calendar-day mr-1 text-success"></i>
-                                    {{ reservation.dateDebut|date('d/m/Y') }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-light border">
-                                    <i class="fas fa-calendar-day mr-1 text-danger"></i>
-                                    {{ reservation.dateFin|date('d/m/Y') }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-warning text-dark px-3 py-2">
-                                    <strong>{{ reservation.prixTotal }} DT</strong>
-                                </span>
-                            </td>
-                            <td>
-                                {% if reservation.statut == 'confirmed' %}
-                                    <span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i>Confirmée</span>
-                                {% else %}
-                                    <span class="badge badge-warning text-dark px-2 py-1"><i class="fas fa-clock mr-1"></i>En attente</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ path('app_reservation_show', {id: reservation.id}) }}"
-                                   class="btn btn-info btn-sm mr-1" title="Consulter">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}"
-                                   class="btn btn-warning btn-sm mr-1" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-danger btn-sm"
-                                        title="Supprimer"
-                                        data-toggle="modal" data-target="#deleteModal{{ reservation.id }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            <th>Ref.</th>
+                            {% if is_granted('ROLE_ADMIN') %}<th>Client</th>{% endif %}
+                            <th>Car</th><th>Dates</th><th>Total</th><th>Status</th><th class="text-right">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for reservation in reservations %}
+                            <tr>
+                                <td data-label="Ref." class="meta" style="color:var(--gold);">#{{ '%04d'|format(reservation.id) }}</td>
+                                {% if is_granted('ROLE_ADMIN') %}<td data-label="Client">{{ reservation.client.nom }}</td>{% endif %}
+                                <td data-label="Car"><span style="font-family:var(--serif);font-size:18px;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</span></td>
+                                <td data-label="Dates" style="white-space:nowrap;">{{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}</td>
+                                <td data-label="Total" style="white-space:nowrap;">{{ reservation.prixTotal|usd }}</td>
+                                <td data-label="Status">
+                                    {% if reservation.statut == 'confirmed' %}
+                                        <span class="cr-pill cr-pill-confirmed">Confirmed</span>
+                                    {% else %}
+                                        <span class="cr-pill cr-pill-pending">Awaiting payment</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right cr-table__actions" style="white-space:nowrap;">
+                                    <a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="link-lx mr-3" style="padding-bottom:4px;">View</a>
+                                    <a href="{{ path('app_reservation_edit', {id: reservation.id}) }}" class="link-lx mr-3" style="padding-bottom:4px;">Edit</a>
+                                    <button type="button" class="link-lx" style="background:none;border-top:0;border-left:0;border-right:0;padding:0 0 4px;color:var(--warn);cursor:pointer;" data-toggle="modal" data-target="#deleteModal{{ reservation.id }}">Cancel</button>
 
-                                <!-- Modal Suppression -->
-                                <div class="modal fade" id="deleteModal{{ reservation.id }}" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-danger text-white">
-                                                <h5 class="modal-title">
-                                                    <i class="fas fa-exclamation-triangle mr-2"></i>Confirmer la suppression
-                                                </h5>
-                                                <button class="close text-white" type="button" data-dismiss="modal">
-                                                    <span>&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Supprimer la réservation #{{ reservation.id }} de
-                                                <strong>{{ reservation.client.nom }}</strong> ?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                                                    <i class="fas fa-times mr-1"></i>Annuler
-                                                </button>
-                                                <form method="post" action="{{ path('app_reservation_delete', {id: reservation.id}) }}" style="display:inline">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
-                                                    <button class="btn btn-danger" type="submit">
-                                                        <i class="fas fa-trash mr-1"></i>Supprimer
-                                                    </button>
-                                                </form>
+                                    <div class="modal fade text-left" id="deleteModal{{ reservation.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteTitle{{ reservation.id }}">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteTitle{{ reservation.id }}">Cancel booking #{{ '%04d'|format(reservation.id) }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                                                </div>
+                                                <div class="modal-body" style="white-space:normal;">
+                                                    {{ reservation.voiture.marque }} {{ reservation.voiture.modele }}, {{ reservation.dateDebut|date('d M') }} — {{ reservation.dateFin|date('d M Y') }}{% if is_granted('ROLE_ADMIN') %}, for {{ reservation.client.nom }}{% endif %}. This cannot be undone.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn-lx btn-lx--outline btn-lx--sm" type="button" data-dismiss="modal">Keep it</button>
+                                                    <form method="post" action="{{ path('app_reservation_delete', {id: reservation.id}) }}" style="display:inline">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                                                        <button class="btn-cr-danger btn-lx--sm" type="submit">Cancel booking</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
     </div>
-</div>
-
+</section>
 {% endblock %}

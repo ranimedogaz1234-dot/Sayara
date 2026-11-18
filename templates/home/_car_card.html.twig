@@ -1,0 +1,25 @@
+{# Vehicle card used on the homepage and the fleet page.
+   Expects: voiture; optionally pickupDate / returnDate (carried from the
+   search into the detail page). Shows only fields Voiture really has. #}
+<article class="lx-card cr-reveal">
+    <div class="lx-card__media">
+        {% if voiture.image %}
+            <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" alt="{{ voiture.marque }} {{ voiture.modele }}" loading="lazy" decoding="async">
+        {% else %}
+            <div class="lx-card__placeholder">{{ voiture.marque }}</div>
+        {% endif %}
+        <span class="lx-tag {{ voiture.disponible ? '' : 'lx-tag--muted' }}">{{ voiture.disponible ? 'Available' : 'Unavailable' }}</span>
+        <span class="lx-card__frame"></span>
+    </div>
+    <div class="lx-card__body">
+        <span class="eyebrow">{{ voiture.marque }}</span>
+        <h3 class="lx-card__name">
+            <a href="{{ path('app_catalog_show', {id: voiture.id, pickupDate: pickupDate|default(null), returnDate: returnDate|default(null)}) }}">{{ voiture.modele }}</a>
+        </h3>
+        <hr class="rule">
+        <div class="lx-card__foot">
+            <div class="lx-price">{{ voiture.prixParJour|usd }}<small>Per day</small></div>
+            <span class="lx-card__cta" aria-hidden="true">View details</span>
+        </div>
+    </div>
+</article>

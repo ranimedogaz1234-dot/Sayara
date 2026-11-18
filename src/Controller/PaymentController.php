@@ -150,9 +150,9 @@ class PaymentController extends AbstractController
             ]);
 
             $email = (new Email())
-                ->from(new Address('noreply@carrent.tn', 'CarRent — Location de Voitures'))
+                ->from(new Address('noreply@carrent.tn', 'Sayara — Location de Voitures'))
                 ->to(new Address($client->getEmail(), $client->getNom()))
-                ->subject('✅ Confirmation de votre réservation #' . $reservation->getId() . ' — CarRent')
+                ->subject('✅ Confirmation de votre réservation #' . $reservation->getId() . ' — Sayara')
                 ->html($htmlBody);
 
             $mailer->send($email);

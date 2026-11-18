@@ -1,226 +1,146 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>CarRent — Location de Voitures</title>
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        :root { --primary: #2a33a3; --secondary: #858796; --success: #1cc88a; --info: #36b9cc; }
-        body { font-family: 'Nunito', sans-serif; background-color: #f8f9fa; }
-        .navbar-custom { background: linear-gradient(135deg, #1a237e, #2a33a3) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .hero { background: linear-gradient(135deg, #1a237e 0%, #2a33a3 100%); color: white; padding: 100px 0; text-align: center; }
-        .hero h1 { font-size: 3rem; font-weight: 700; margin-bottom: 20px; }
-        .car-card { border: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease; margin-bottom: 30px; }
-        .car-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        .car-card .card-header { background: linear-gradient(135deg, #1a237e, #2a33a3); color: white; padding: 15px; }
-        .car-card .badge-price { background: #1cc88a; color: white; font-size: 1.2rem; padding: 10px 15px; border-radius: 5px; }
-        .btn-primary { background: linear-gradient(135deg, #1a237e, #2a33a3); border: none; border-radius: 5px; }
-        .btn-primary:hover { background: linear-gradient(135deg, #2a33a3, #1a237e); }
-        .footer { background-color: #2e3338; color: white; padding: 40px 0; margin-top: 60px; }
-    </style>
-</head>
-<body>
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container">
-        <a class="navbar-brand font-weight-bold" href="{{ path('app_home') }}">
-            <i class="fas fa-car mr-2"></i>CarRent
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">
-                        <i class="fas fa-home mr-1"></i>Accueil
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_catalog') }}">
-                        <i class="fas fa-list mr-1"></i>Nos Voitures
-                    </a>
-                </li>
-                {% if app.user %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_dashboard') }}">
-                                <i class="fas fa-tachometer-alt mr-1"></i>Tableau de Bord
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_profile') }}">
-                            <i class="fas fa-user-circle mr-1"></i>Mon Compte
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ logout_path() }}">
-                            <i class="fas fa-sign-out-alt mr-1"></i>Déconnexion
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-sm btn-light text-primary font-weight-bold mx-2" href="{{ path('app_login') }}">
-                            <i class="fas fa-sign-in-alt mr-1"></i>Connexion
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-sm btn-primary text-white font-weight-bold" href="{{ path('app_signup') }}">
-                            <i class="fas fa-user-plus mr-1"></i>Inscription
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Luxury car rental{% endblock %}
+{% block nav_transparent %}yes{% endblock %}
+
+{% block body %}
+{% set hero = hero_credit() %}
+<section class="lx-hero">
+    {# The ambient layer is this same photograph, extended and heavily
+       blurred, so the room's own light continues past every edge; the mask
+       keeps the car sharp and lets the rest of the room fall off into it. #}
+    <div class="lx-hero__media" style="--hero-ambient: url('{{ asset('images/hero-ambient.jpg') }}'); --hero-mask: url('{{ asset('images/hero-mask.png') }}'); --hero-scene: url('{{ asset('images/hero-scene.jpg') }}')">
+        <img src="{{ asset('images/hero-showroom.jpg') }}" alt="A Rolls-Royce Cullinan in a dark wood-panelled showroom" width="1291" height="860" fetchpriority="high">
+    </div>
+
+    <div class="lx-hero__content">
+        <div class="container">
+            <div class="lx-hero__copy">
+            <span class="lx-hero__eyebrow">London <i>&middot;</i> Dubai <i>&middot;</i> Worldwide</span>
+            <h1 class="lx-hero__title">Discover the world's<br><em>most desirable</em> cars</h1>
+            <p class="lx-hero__lede">Curated luxury, exotic and prestige vehicles, reserved online and rented by the day.</p>
+            </div>
+
+            {# Every field maps to a real filter in HomeController::catalog():
+               make -> brand, model -> q (brand/model search), price -> maxPrice
+               (daily rate), and the pick-up date is validated server-side and
+               carried through to the booking form. #}
+            <form class="lx-search lx-search--hero" action="{{ path('app_catalog') }}" method="get">
+                <div class="lx-search__field">
+                    <label for="sBrand">Make</label>
+                    <select id="sBrand" name="brand">
+                        <option value="">Any make</option>
+                        {% for brand in brands %}<option value="{{ brand }}">{{ brand }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="lx-search__field">
+                    <label for="sQ">Model</label>
+                    <input type="text" id="sQ" name="q" placeholder="Any model" autocomplete="off">
+                </div>
+                <div class="lx-search__field">
+                    <label for="sPrice">Price</label>
+                    <select id="sPrice" name="maxPrice">
+                        <option value="">Any price</option>
+                        {% for step in priceSteps %}<option value="{{ step }}">Up to {{ step|usd }} / day</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="lx-search__field">
+                    <label for="sPick">Pick-up</label>
+                    <input type="text" id="sPick" name="pickupDate" placeholder="Any date" min="{{ 'now'|date('Y-m-d') }}"
+                           onfocus="this.type='date'" onblur="if (!this.value) { this.type='text'; }">
+                </div>
+                <button type="submit" class="lx-search__submit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5.5 5.5"/></svg> Search</button>
+            </form>
         </div>
     </div>
-</nav>
 
-<!-- Hero Section -->
-<div class="hero">
+    {% if hero %}
+        <p class="lx-hero__credit">{{ hero.caption }} &middot; after a photo by {{ hero.author }}, <a href="{{ hero.licenseUrl }}" rel="license noopener" target="_blank">{{ hero.license }}</a></p>
+    {% endif %}
+</section>
+
+<section class="lx-section">
     <div class="container">
-        <h1>
-            {% if app.user %}
-                Bienvenue {{ app.user.username }}, chez CarRent
-            {% else %}
-                Bienvenue chez CarRent
-            {% endif %}
-        </h1>
-        <p class="lead mb-4">Louez la voiture de vos rêves à un prix imbattable</p>
-        <a href="{{ path('app_catalog') }}" class="btn btn-light btn-lg">
-            <i class="fas fa-search mr-2"></i>Voir nos voitures
-        </a>
-    </div>
-</div>
-
-<!-- Main Content -->
-<div class="container my-5">
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle mr-2"></i>{{ message }}
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <div class="lx-head cr-reveal">
+            <div>
+                <span class="eyebrow eyebrow--rule">The collection</span>
+                <h2 class="title">Featured <em>this week</em></h2>
+            </div>
+            <a class="link-lx" href="{{ path('app_catalog') }}">View the full fleet <span class="arrow">&rarr;</span></a>
         </div>
-    {% endfor %}
-
-    <div class="row">
-        <div class="col-lg-8">
-            <h2 class="mb-4"><i class="fas fa-star text-warning mr-2"></i>Voitures Populaires</h2>
-            <div class="row">
-                {% for voiture in voitures %}
-                    <div class="col-md-6">
-                        <div class="car-card">
-                            <div class="card-header">
-                                <h5 class="mb-0">{{ voiture.marque }} {{ voiture.modele }}</h5>
-                            </div>
-                            <div class="card-body">
-                                {% if voiture.image %}
-                                    <img src="{{ asset('uploads/voitures/' ~ voiture.image) }}" class="img-fluid mb-3" alt="{{ voiture.marque }}">
-                                {% else %}
-                                    <div class="bg-light text-center py-5 mb-3">
-                                        <i class="fas fa-car fa-3x text-gray-300"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge-price">{{ voiture.prixParJour }} DT / jour</span>
-                                    {% if voiture.disponible %}
-                                        <span class="badge badge-success">Disponible</span>
-                                    {% else %}
-                                        <span class="badge badge-secondary">Indisponible</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-top">
-                                {% if app.user %}
-                                    <a href="{{ path('app_reservation_new') }}" class="btn btn-primary btn-sm w-100">
-                                        <i class="fas fa-calendar-check mr-1"></i>Réserver
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm w-100">
-                                        <i class="fas fa-lock mr-1"></i>Se connecter pour réserver
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+        {% if featuredVoitures|length > 0 %}
+            <div class="lx-grid">
+                {% for voiture in featuredVoitures %}
+                    {% include 'home/_car_card.html.twig' with {voiture: voiture} %}
                 {% endfor %}
             </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <div class="card shadow mb-4 border-left-primary">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="m-0 font-weight-bold"><i class="fas fa-info-circle mr-2"></i>À Propos</h6>
-                </div>
-                <div class="card-body">
-                    <p>CarRent est votre partenaire de confiance pour la location de voitures.</p>
-                    <ul>
-                        <li>Prix compétitifs</li>
-                        <li>Véhicules bien entretenus</li>
-                        <li>Réservation facile</li>
-                        <li>Support client 24/7</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card shadow border-left-success">
-                <div class="card-header bg-success text-white">
-                    <h6 class="m-0 font-weight-bold"><i class="fas fa-user mr-2"></i>Client</h6>
-                </div>
-                <div class="card-body text-center">
-                    {% if app.user %}
-                        <p><strong>{{ app.user.nom }}</strong></p>
-                        <p class="text-muted small">{{ app.user.email }}</p>
-                        <a href="{{ path('app_profile') }}" class="btn btn-sm btn-success">
-                            <i class="fas fa-user mr-1"></i>Mon Compte
-                        </a>
-                    {% else %}
-                        <p>Vous n'êtes pas connecté</p>
-                        <a href="{{ path('app_login') }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-sign-in-alt mr-1"></i>Se Connecter
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+        {% else %}
+            <p class="lede">No vehicles are available at the moment. Please check back soon.</p>
+        {% endif %}
     </div>
-</div>
+</section>
 
-<!-- Footer -->
-<footer class="footer">
+<section class="lx-section lx-section--line" id="marques">
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <h6 class="font-weight-bold mb-3">CarRent</h6>
-                <p>Votre solution de location de voitures en ligne.</p>
+            <div class="col-lg-5 mb-5 mb-lg-0 cr-reveal">
+                <span class="eyebrow eyebrow--rule">The marques</span>
+                <h2 class="title mt-4">Houses of <em>distinction</em></h2>
+                <p class="lede mt-4">Every name below is in the fleet today. Choose a marque to see its available cars.</p>
             </div>
-            <div class="col-md-4">
-                <h6 class="font-weight-bold mb-3">Liens Rapides</h6>
-                <ul class="list-unstyled">
-                    <li><a href="{{ path('app_home') }}" class="text-white-50">Accueil</a></li>
-                    <li><a href="{{ path('app_catalog') }}" class="text-white-50">Voitures</a></li>
-                </ul>
+            <div class="col-lg-6 offset-lg-1 cr-reveal">
+                {% if brandCounts|length > 0 %}
+                    <ul class="lx-marques">
+                        {% for brand, total in brandCounts %}
+                            <li><a href="{{ path('app_catalog', {brand: brand}) }}">
+                                <span class="name">{{ brand }}</span>
+                                <span class="count">{{ '%02d'|format(total) }} {{ total > 1 ? 'cars' : 'car' }} &rarr;</span>
+                            </a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="lede">No marques are available right now.</p>
+                {% endif %}
             </div>
-            <div class="col-md-4">
-                <h6 class="font-weight-bold mb-3">Contact</h6>
-                <p class="text-white-50">
-                    <i class="fas fa-phone mr-2"></i>+33 1 00 00 00 00<br>
-                    <i class="fas fa-envelope mr-2"></i>contact@carrent.fr
-                </p>
-            </div>
-        </div>
-        <hr class="my-4">
-        <div class="text-center text-white-50">
-            <p>&copy; 2026 CarRent. Tous droits réservés.</p>
         </div>
     </div>
-</footer>
+</section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<section class="lx-section lx-section--line">
+    <div class="container">
+        <div class="lx-head cr-reveal">
+            <div>
+                <span class="eyebrow eyebrow--rule">The Sayara standard</span>
+                <h2 class="title">Simple, <em>by design</em></h2>
+            </div>
+        </div>
+        <div class="lx-pillars cr-reveal">
+            <div class="lx-pillar">
+                <span class="num">01</span>
+                <h3>Transparent pricing</h3>
+                <p>Every rate is quoted per day, and your total is calculated from your exact dates before you confirm.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">02</span>
+                <h3>Reserved in minutes</h3>
+                <p>Choose a car and your dates, review the total and confirm online. Your booking appears in your account at once.</p>
+            </div>
+            <div class="lx-pillar">
+                <span class="num">03</span>
+                <h3>Private to you</h3>
+                <p>Your account is password-protected, and your bookings are visible only to you.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="lx-section pt-0">
+    <div class="container">
+        <div class="lx-cta cr-reveal">
+            <span class="eyebrow">Your next drive</span>
+            <h2 class="title">Find the car that <em>suits the occasion</em></h2>
+            <a class="btn-lx btn-lx--gold" href="{{ path('app_catalog') }}">Explore the fleet</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

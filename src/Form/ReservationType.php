@@ -28,7 +28,7 @@ class ReservationType extends AbstractType
             ->add('voiture', EntityType::class, [
                 'class' => Voiture::class,
                 'choice_label' => function(Voiture $voiture) {
-                    return $voiture->getMarque() . ' ' . $voiture->getModele() . ' (' . $voiture->getPrixParJour() . ' DT/jour)';
+                    return $voiture->getMarque() . ' ' . $voiture->getModele() . ' ($' . number_format((float) $voiture->getPrixParJour(), 0, '.', ',') . '/day)';
                 },
                 'label' => 'Voiture à louer',
                 'placeholder' => '-- Choisir une voiture disponible --',

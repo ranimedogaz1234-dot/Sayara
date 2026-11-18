@@ -1,0 +1,44 @@
+{% extends 'base_public.html.twig' %}
+
+{% block title %}Photography credits{% endblock %}
+
+{% block body %}
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Credits',
+    title: 'Photography',
+    em: 'credits',
+    lede: 'The vehicle photographs on this site are published on Wikimedia Commons by their authors under Creative Commons licences. They are shown here with attribution, resized for the web.',
+    compact: true,
+} %}
+
+<section class="lx-section--tight">
+    <div class="container">
+        <div class="table-responsive cr-reveal cr-visible">
+            <table class="cr-table">
+                <thead><tr><th>Photograph</th><th>Author</th><th>Licence</th><th>Source</th></tr></thead>
+                <tbody>
+                {% set hero = hero_credit() %}
+                {% if hero %}
+                    <tr>
+                        <td>{{ hero.commonsFile|replace({'File:': ''}) }}<br><span class="meta" style="letter-spacing:.08em;text-transform:none;">Homepage image &middot; {{ hero.modification }}</span></td>
+                        <td>{{ hero.author }}</td>
+                        <td><a href="{{ hero.licenseUrl }}" target="_blank" rel="license noopener" style="color:var(--gold);">{{ hero.license }}</a></td>
+                        <td><a href="{{ hero.sourceUrl }}" target="_blank" rel="noopener">Wikimedia Commons</a></td>
+                    </tr>
+                {% endif %}
+                {% for filename, photo in photo_credits() %}
+                    <tr>
+                        <td>{{ photo.commonsFile|replace({'File:': ''}) }}</td>
+                        <td>{{ photo.author }}</td>
+                        <td><a href="{{ photo.licenseUrl }}" target="_blank" rel="license noopener" style="color:var(--gold);">{{ photo.license }}</a></td>
+                        <td><a href="{{ photo.sourceUrl }}" target="_blank" rel="noopener">Wikimedia Commons</a></td>
+                    </tr>
+                {% else %}
+                    {% if not hero %}<tr><td colspan="4">No third-party photographs are in use.</td></tr>{% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

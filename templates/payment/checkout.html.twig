@@ -1,93 +1,75 @@
-{% extends 'base.html.twig' %}
-{% block title %}Paiement — Réservation #{{ reservation.id }}{% endblock %}
+{% extends 'base_public.html.twig' %}
+{% block title %}Payment — Booking #{{ reservation.id }}{% endblock %}
 
 {% block stylesheets %}
 <style>
-/* ── Payment page overrides ── */
 .payment-stepper { display:flex; align-items:center; justify-content:center; margin-bottom:2rem; gap:0; }
 .step { display:flex; flex-direction:column; align-items:center; position:relative; }
-.step-circle { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.9rem; border:3px solid #dee2e6; background:#fff; color:#6c757d; z-index:1; }
-.step.done   .step-circle { background:#1cc88a; border-color:#1cc88a; color:#fff; }
-.step.active .step-circle { background:#2a33a3; border-color:#2a33a3; color:#fff; }
-.step-label { font-size:.7rem; font-weight:600; margin-top:4px; color:#6c757d; white-space:nowrap; }
-.step.active .step-label { color:#2a33a3; }
-.step.done   .step-label { color:#1cc88a; }
-.step-connector { flex:1; height:3px; background:#dee2e6; min-width:40px; max-width:80px; margin-bottom:18px; }
-.step-connector.done { background:#1cc88a; }
+.step-circle { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font:400 15px/1 var(--serif); border:1px solid var(--line); background:var(--ink); color:var(--grey); z-index:1; }
+.step-circle i { font-size:11px; }
+.step.done   .step-circle { border-color:var(--gold-line); color:var(--gold); }
+.step.active .step-circle { background:var(--gold); border-color:var(--gold); color:var(--ink); }
+.step-label { margin-top:10px; font:500 9.5px/1 var(--sans); letter-spacing:.24em; text-transform:uppercase; color:var(--grey-dim); white-space:nowrap; }
+.step.active .step-label { color:var(--ivory); }
+.step.done   .step-label { color:var(--gold); }
+.step-connector { flex:1; height:1px; background:var(--line); min-width:32px; max-width:80px; margin-bottom:20px; }
+.step-connector.done { background:var(--gold-line); }
 
+.payment-card { background:var(--charcoal); border:1px solid var(--line); border-radius:0; }
+.payment-card label { color: var(--grey); }
 .card-input-group { position:relative; }
-.card-input-group .card-icons { position:absolute; right:12px; top:50%; transform:translateY(-50%); display:flex; gap:4px; opacity:.5; }
+.card-input-group .card-icons { position:absolute; right:0; top:50%; transform:translateY(-50%); display:flex; gap:4px; opacity:.5; color:var(--ivory); }
 .card-input-group input { padding-right:90px; }
+.payment-heading { margin:0 0 18px; font:400 22px/1.2 var(--serif); color:var(--ivory); }
 
-.payment-summary { background:linear-gradient(135deg,#2a33a3,#1a237e); color:#fff; border-radius:10px; padding:1.5rem; }
-.payment-summary .price-total { font-size:2rem; font-weight:800; }
+.payment-summary { background:var(--charcoal); border:1px solid var(--gold-line); color:var(--ivory); padding:30px; }
+.payment-summary .summary-row { display:flex; justify-content:space-between; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+.payment-summary .summary-row span:first-child { font:500 9.5px/1.6 var(--sans); letter-spacing:.26em; text-transform:uppercase; color:var(--grey); }
+.payment-summary .summary-row span:last-child { font-family:var(--serif); font-size:17px; }
+.payment-summary .price-total { font:400 34px/1 var(--serif); color:var(--ivory); }
 
-.security-badges { display:flex; gap:12px; flex-wrap:wrap; }
-.security-badge { display:flex; align-items:center; gap:6px; font-size:.72rem; color:#6c757d; }
-.security-badge i { color:#1cc88a; }
-
-.btn-pay { background:linear-gradient(135deg,#2a33a3,#1a237e); border:none; font-size:1.1rem; font-weight:700; padding:.85rem 2rem; border-radius:8px; letter-spacing:.5px; transition:all .3s; }
-.btn-pay:hover { background:linear-gradient(135deg,#1a237e,#2a33a3); transform:translateY(-1px); box-shadow:0 6px 20px rgba(42,51,163,.35); }
+.security-badges { display:flex; gap:18px; flex-wrap:wrap; }
+.security-badge { display:flex; align-items:center; gap:8px; font:500 9.5px/1.4 var(--sans); letter-spacing:.2em; text-transform:uppercase; color: var(--grey); }
+.security-badge i { color: var(--gold); }
 
 .is-invalid ~ .invalid-feedback { display:block; }
 </style>
 {% endblock %}
 
 {% block body %}
-<!-- Page Heading -->
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">
-        <i class="fas fa-credit-card text-primary mr-2"></i>Paiement sécurisé
-    </h1>
-    <a href="{{ path('app_reservation_index') }}" class="btn btn-secondary shadow-sm">
-        <i class="fas fa-arrow-left fa-sm mr-1"></i>Retour
-    </a>
-</div>
+{% include '_partials/page_header.html.twig' with {
+    eyebrow: 'Booking #' ~ '%04d'|format(reservation.id),
+    title: 'Secure',
+    em: 'payment',
+    lede: 'Demonstration checkout: no real payment is taken and card details are never stored.',
+    compact: true,
+} %}
+<section class="lx-section--tight">
+<div class="container">
 
-<!-- Progress Stepper -->
-<div class="payment-stepper mb-4">
-    <div class="step done">
-        <div class="step-circle"><i class="fas fa-check"></i></div>
-        <div class="step-label">Voiture</div>
-    </div>
+<div class="payment-stepper mb-4 cr-reveal cr-visible">
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Vehicle</div></div>
     <div class="step-connector done"></div>
-    <div class="step done">
-        <div class="step-circle"><i class="fas fa-check"></i></div>
-        <div class="step-label">Réservation</div>
-    </div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Booking</div></div>
     <div class="step-connector done"></div>
-    <div class="step active">
-        <div class="step-circle">3</div>
-        <div class="step-label">Paiement</div>
-    </div>
+    <div class="step active"><div class="step-circle">3</div><div class="step-label">Payment</div></div>
     <div class="step-connector"></div>
-    <div class="step">
-        <div class="step-circle">4</div>
-        <div class="step-label">Confirmation</div>
-    </div>
+    <div class="step"><div class="step-circle">4</div><div class="step-label">Confirmation</div></div>
 </div>
 
 <div class="row">
-    <!-- Payment Form -->
-    <div class="col-lg-7 mb-4">
-        <div class="card shadow">
-            <div class="card-header py-3" style="background:linear-gradient(135deg,#2a33a3,#1a237e);">
-                <h6 class="m-0 font-weight-bold text-white">
-                    <i class="fas fa-lock mr-2"></i>Informations de paiement sécurisé
-                </h6>
-            </div>
-            <div class="card-body p-4">
+    <div class="col-lg-7 mb-4 cr-reveal cr-visible">
+        <div class="payment-card">
+            <div class="cr-panel-header"><i class="fas fa-lock mr-2"></i>Secure payment details</div>
+            <div class="p-4">
                 <div class="alert alert-warning" role="alert">
-                    <strong>Mode démonstration :</strong> aucun paiement réel n'est effectué et les données de carte ne sont ni stockées ni transmises à un prestataire. N'utilisez pas de vraie carte bancaire.
+                    <strong>Demo mode:</strong> no real payment is processed and card data is never stored or sent to any provider. Do not enter a real card number.
                 </div>
                 <form method="POST" action="{{ path('app_payment_checkout', {id: reservation.id}) }}" id="paymentForm" novalidate>
                     <input type="hidden" name="_token" value="{{ csrf_token('payment_' ~ reservation.id) }}">
 
-                    <!-- Card Number -->
                     <div class="form-group">
-                        <label class="font-weight-bold text-gray-700">
-                            <i class="fas fa-credit-card mr-1 text-primary"></i>Numéro de carte
-                        </label>
+                        <label class="font-weight-bold"><i class="fas fa-credit-card mr-1"></i>Card number</label>
                         <div class="card-input-group">
                             <input type="text" name="card_number" id="cardNumber"
                                    class="form-control form-control-lg {{ errors.card_number is defined ? 'is-invalid' : '' }}"
@@ -103,31 +85,25 @@
                         </div>
                     </div>
 
-                    <!-- Cardholder Name -->
                     <div class="form-group">
-                        <label class="font-weight-bold text-gray-700">
-                            <i class="fas fa-user mr-1 text-success"></i>Nom du titulaire
-                        </label>
+                        <label class="font-weight-bold"><i class="fas fa-user mr-1"></i>Cardholder name</label>
                         <input type="text" name="card_holder" id="cardHolder"
                                class="form-control {{ errors.card_holder is defined ? 'is-invalid' : '' }}"
-                               placeholder="NOM PRÉNOM" style="text-transform:uppercase;"
+                               placeholder="FIRST LAST" style="text-transform:uppercase;"
                                value="{{ app.request.request.get('card_holder', app.user.nom|upper) }}" autocomplete="cc-name">
                         {% if errors.card_holder is defined %}
                             <div class="invalid-feedback">{{ errors.card_holder }}</div>
                         {% endif %}
                     </div>
 
-                    <!-- Expiry + CVV -->
                     <div class="row">
                         <div class="col-md-7">
                             <div class="form-group">
-                                <label class="font-weight-bold text-gray-700">
-                                    <i class="fas fa-calendar-alt mr-1 text-warning"></i>Date d'expiration
-                                </label>
+                                <label class="font-weight-bold"><i class="fas fa-calendar-alt mr-1"></i>Expiry date</label>
                                 <div class="row">
                                     <div class="col-6">
                                         <select name="expiry_month" class="form-control {{ errors.expiry is defined ? 'is-invalid' : '' }}">
-                                            <option value="">Mois</option>
+                                            <option value="">Month</option>
                                             {% for m in months %}
                                                 <option value="{{ '%02d'|format(m) }}" {{ app.request.request.get('expiry_month') == '%02d'|format(m) ? 'selected' : '' }}>
                                                     {{ '%02d'|format(m) }}
@@ -137,7 +113,7 @@
                                     </div>
                                     <div class="col-6">
                                         <select name="expiry_year" class="form-control {{ errors.expiry is defined ? 'is-invalid' : '' }}">
-                                            <option value="">Année</option>
+                                            <option value="">Year</option>
                                             {% for y in years %}
                                                 <option value="{{ y }}" {{ app.request.request.get('expiry_year') == y ? 'selected' : '' }}>{{ y }}</option>
                                             {% endfor %}
@@ -151,10 +127,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
-                                <label class="font-weight-bold text-gray-700">
-                                    <i class="fas fa-lock mr-1 text-danger"></i>CVV
-                                    <i class="fas fa-question-circle text-muted ml-1" title="3 ou 4 chiffres au dos de votre carte"></i>
-                                </label>
+                                <label class="font-weight-bold"><i class="fas fa-lock mr-1"></i>CVV</label>
                                 <input type="password" name="cvv" id="cvv"
                                        class="form-control {{ errors.cvv is defined ? 'is-invalid' : '' }}"
                                        placeholder="•••" maxlength="4" autocomplete="cc-csc">
@@ -165,16 +138,14 @@
                         </div>
                     </div>
 
-                    <hr class="my-4">
-                    <h6 class="font-weight-bold text-gray-700 mb-3">
-                        <i class="fas fa-map-marker-alt mr-1 text-primary"></i>Adresse de facturation
-                    </h6>
+                    <hr style="border-color: var(--line);" class="my-4">
+                    <h3 class="payment-heading">Billing <em style="color:var(--gold);">address</em></h3>
 
                     <div class="form-group">
-                        <label class="font-weight-bold text-gray-700">Adresse</label>
+                        <label class="font-weight-bold">Address</label>
                         <input type="text" name="billing_address"
                                class="form-control {{ errors.billing_address is defined ? 'is-invalid' : '' }}"
-                               placeholder="12 Rue de la République"
+                               placeholder="12 Main Street"
                                value="{{ app.request.request.get('billing_address', '') }}" autocomplete="street-address">
                         {% if errors.billing_address is defined %}
                             <div class="invalid-feedback">{{ errors.billing_address }}</div>
@@ -184,10 +155,10 @@
                     <div class="row">
                         <div class="col-md-7">
                             <div class="form-group">
-                                <label class="font-weight-bold text-gray-700">Ville</label>
+                                <label class="font-weight-bold">City</label>
                                 <input type="text" name="billing_city"
                                        class="form-control {{ errors.billing_city is defined ? 'is-invalid' : '' }}"
-                                       placeholder="Tunis"
+                                       placeholder="City"
                                        value="{{ app.request.request.get('billing_city', '') }}" autocomplete="address-level2">
                                 {% if errors.billing_city is defined %}
                                     <div class="invalid-feedback">{{ errors.billing_city }}</div>
@@ -196,7 +167,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
-                                <label class="font-weight-bold text-gray-700">Code postal</label>
+                                <label class="font-weight-bold">Postal code</label>
                                 <input type="text" name="billing_zip"
                                        class="form-control {{ errors.billing_zip is defined ? 'is-invalid' : '' }}"
                                        placeholder="1000"
@@ -208,89 +179,62 @@
                         </div>
                     </div>
 
-                    <hr class="my-4">
+                    <hr style="border-color: var(--line);" class="my-4">
 
-                    <!-- Security badges -->
                     <div class="security-badges mb-4">
                         <div class="security-badge"><i class="fas fa-shield-alt"></i> SSL 256-bit</div>
-                        <div class="security-badge"><i class="fas fa-lock"></i> Paiement sécurisé</div>
-                        <div class="security-badge"><i class="fas fa-check-circle"></i> Données protégées</div>
-                        <div class="security-badge"><i class="fas fa-undo"></i> Aucune transaction réelle</div>
+                        <div class="security-badge"><i class="fas fa-lock"></i> Secure payment</div>
+                        <div class="security-badge"><i class="fas fa-check-circle"></i> Data protected</div>
+                        <div class="security-badge"><i class="fas fa-undo"></i> No real transaction</div>
                     </div>
 
-                    <button type="submit" class="btn btn-pay btn-block text-white">
-                        <i class="fas fa-lock mr-2"></i>Confirmer le paiement — {{ reservation.prixTotal|number_format(2, ',', ' ') }} DT
+                    <button type="submit" class="btn-cr-primary w-100">
+                        <i class="fas fa-lock mr-2"></i>Confirm Payment — {{ reservation.prixTotal|usd(2) }}
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Order Summary -->
-    <div class="col-lg-5">
+    <div class="col-lg-5 cr-reveal cr-visible">
         <div class="payment-summary mb-4">
-            <div class="text-uppercase font-weight-bold mb-3" style="letter-spacing:1px;font-size:.75rem;opacity:.8;">
-                <i class="fas fa-receipt mr-1"></i>Résumé de la réservation
+            <span class="eyebrow d-block mb-3">Booking summary</span>
+            <div class="mb-3">
+                <div style="font:400 28px/1.15 var(--serif);">{{ reservation.voiture.marque }} <em style="color:var(--gold);">{{ reservation.voiture.modele }}</em></div>
+                <div class="meta mt-2">Booking #{{ '%04d'|format(reservation.id) }}</div>
             </div>
-            <div class="d-flex align-items-center mb-3">
-                <div class="mr-3">
-                    <i class="fas fa-car fa-2x"></i>
-                </div>
-                <div>
-                    <div class="font-weight-bold" style="font-size:1.1rem;">{{ reservation.voiture.marque }} {{ reservation.voiture.modele }}</div>
-                    <div style="opacity:.75;font-size:.85rem;">Réservation #{{ reservation.id }}</div>
-                </div>
-            </div>
-            <hr style="border-color:rgba(255,255,255,.2);">
-            <div class="d-flex justify-content-between mb-2">
-                <span style="opacity:.8;"><i class="fas fa-calendar-day mr-1"></i>Début</span>
-                <strong>{{ reservation.dateDebut|date('d/m/Y') }}</strong>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span style="opacity:.8;"><i class="fas fa-calendar-day mr-1"></i>Fin</span>
-                <strong>{{ reservation.dateFin|date('d/m/Y') }}</strong>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span style="opacity:.8;"><i class="fas fa-sun mr-1"></i>Durée</span>
-                <strong>
-                    {% set days = (reservation.dateFin.timestamp - reservation.dateDebut.timestamp) / 86400 + 1 %}
-                    {{ days|round(0,'ceil') }} jour(s)
-                </strong>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span style="opacity:.8;"><i class="fas fa-tag mr-1"></i>Prix/jour</span>
-                <strong>{{ reservation.voiture.prixParJour }} DT</strong>
-            </div>
-            <hr style="border-color:rgba(255,255,255,.2);">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="font-weight-bold" style="font-size:1rem;">Total</span>
-                <span class="price-total">{{ reservation.prixTotal|number_format(2, ',', ' ') }} <small>DT</small></span>
+            <div class="summary-row"><span>Pick-up</span><span>{{ reservation.dateDebut|date('d/m/Y') }}</span></div>
+            <div class="summary-row"><span>Return</span><span>{{ reservation.dateFin|date('d/m/Y') }}</span></div>
+            {% set days = (reservation.dateFin.timestamp - reservation.dateDebut.timestamp) / 86400 + 1 %}
+            <div class="summary-row"><span>Duration</span><span>{{ days|round(0,'ceil') }} day(s)</span></div>
+            <div class="summary-row"><span>Price per day</span><span>{{ reservation.voiture.prixParJour|usd }}</span></div>
+            <div class="d-flex justify-content-between align-items-baseline pt-4">
+                <span class="eyebrow">Total</span>
+                <span class="price-total">{{ reservation.prixTotal|usd(2) }}</span>
             </div>
         </div>
 
-        <div class="card shadow border-left-success">
-            <div class="card-body py-3">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-envelope fa-2x text-success mr-3"></i>
-                    <div>
-                        <div class="font-weight-bold text-gray-800" style="font-size:.85rem;">Email de confirmation</div>
-                        <div class="text-muted" style="font-size:.78rem;">Un email sera envoyé à <strong>{{ app.user.email }}</strong> après confirmation.</div>
-                    </div>
+        <div class="cr-panel cr-panel-body">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-envelope fa-lg mr-3" style="color: var(--gold);"></i>
+                <div>
+                    <div class="eyebrow mb-1" style="font-size:9.5px;">Confirmation email</div>
+                    <div class="small" style="color: var(--cr-gray-300);">An email will be sent to <strong>{{ app.user.email }}</strong> once confirmed.</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+</section>
 {% endblock %}
 
 {% block javascripts %}
 <script>
-// Format card number with spaces
 document.getElementById('cardNumber')?.addEventListener('input', function(e) {
     let v = e.target.value.replace(/\D/g, '').substring(0, 19);
     e.target.value = v.match(/.{1,4}/g)?.join(' ') || v;
 });
-// Uppercase cardholder name
 document.getElementById('cardHolder')?.addEventListener('input', function(e) {
     e.target.value = e.target.value.toUpperCase();
 });

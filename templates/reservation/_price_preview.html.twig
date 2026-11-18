@@ -1,0 +1,35 @@
+<script>
+// Display-only estimate (the server computes the real total on save).
+// Reads each car's daily rate from its option label, e.g. "... ($1,450/day)".
+(function () {
+    // Symfony assigns the widget ids itself, so look the fields up by name.
+    var form = document.getElementById('reservationForm');
+    if (!form) { return; }
+    var select = form.querySelector('select[name$="[voiture]"]');
+    var debut = form.querySelector('input[name$="[dateDebut]"]');
+    var fin = form.querySelector('input[name$="[dateFin]"]');
+    var box = document.getElementById('pricePreview');
+    if (!select || !debut || !fin || !box) { return; }
+    var prices = {};
+    Array.prototype.forEach.call(select.options, function (opt) {
+        var m = opt.value && opt.text.match(/\(\$([\d,]+(?:\.\d+)?)\/day\)/);
+        if (m) { prices[opt.value] = parseFloat(m[1].replace(/,/g, '')); }
+    });
+    function update() {
+        var rate = prices[select.value];
+        if (rate && debut.value && fin.value) {
+            var days = Math.ceil((new Date(fin.value) - new Date(debut.value)) / 86400000) + 1;
+            if (days >= 1) {
+                document.getElementById('numDays').textContent = days;
+                document.getElementById('pricePerDay').textContent = rate.toLocaleString('en-US');
+                document.getElementById('estimatedPrice').textContent = (days * rate).toLocaleString('en-US');
+                box.style.display = '';
+                return;
+            }
+        }
+        box.style.display = 'none';
+    }
+    [select, debut, fin].forEach(function (el) { el.addEventListener('change', update); });
+    update();
+})();
+</script>
