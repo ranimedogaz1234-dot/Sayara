@@ -65,6 +65,39 @@ class VoitureRepository extends ServiceEntityRepository
      *
      * @return Voiture[]
      */
+    /**
+     * Homepage selection: the pinned cars first, in the given order (only
+     * those that exist and are available), then the most expensive other
+     * available cars until $limit is reached.
+     *
+     * @param list<array{marque: string, modele: string}> $pinned
+     *
+     * @return Voiture[]
+     */
+    public function findFeatured(array $pinned, int $limit): array
+    {
+        $selection = [];
+        foreach ($pinned as $pin) {
+            $voiture = $this->findOneBy(['marque' => $pin['marque'], 'modele' => $pin['modele'], 'disponible' => true]);
+            if (null !== $voiture && count($selection) < $limit) {
+                $selection[$voiture->getId()] = $voiture;
+            }
+        }
+
+        $qb = $this->createQueryBuilder('v')
+            ->where('v.disponible = true')
+            ->orderBy('v.prixParJour', 'DESC')
+            ->setMaxResults($limit - count($selection));
+        if ([] !== $selection) {
+            $qb->andWhere('v.id NOT IN (:pinned)')->setParameter('pinned', array_keys($selection));
+        }
+        foreach ($qb->getQuery()->getResult() as $voiture) {
+            $selection[$voiture->getId()] = $voiture;
+        }
+
+        return array_values($selection);
+    }
+
     public function searchAvailable(?string $brand, ?string $query, string $sort, ?float $maxPrice = null): array
     {
         $qb = $this->createQueryBuilder('v')

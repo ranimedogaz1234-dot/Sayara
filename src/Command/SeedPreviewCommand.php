@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Reservation;
 use App\Entity\Voiture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -16,14 +17,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Fills var/preview.db with the synthetic preview fleet described in
- * config/preview/fleet.json, and downloads its photos from Wikimedia
- * Commons into public/uploads/voitures/ (git-ignored).
+ * config/preview/fleet.json, and puts its photos into public/uploads/voitures/
+ * (git-ignored): Wikimedia Commons photos are downloaded, photos supplied by
+ * the site owner ("localFile") are copied from config/preview/photos/.
  *
  * Safety: refuses to run unless the active Doctrine connection resolves to
  * a file named preview.db, so it can never write to var/data.db. It is
  * additive and idempotent - vehicles are matched by brand + model and
- * updated or created; nothing is ever deleted, so users and bookings made
- * while browsing the preview survive a re-run.
+ * updated or created. The only deletions are vehicles listed under
+ * "retired", and only when they have no booking (otherwise they are just
+ * marked unavailable), so users and bookings survive a re-run.
  */
 #[AsCommand(
     name: 'app:preview:seed',
@@ -75,8 +78,9 @@ final class SeedPreviewCommand extends Command
             $this->entityManager->getMetadataFactory()->getAllMetadata(),
         );
 
+        $this->copyLocalPhotos($manifest['photos'], $io);
         if (!$input->getOption('skip-download')) {
-            $this->downloadPhotos($manifest['photos'], $io);
+            $this->downloadPhotos(array_filter($manifest['photos'], static fn (array $p): bool => isset($p['commonsFile'])), $io);
         }
 
         $repository = $this->entityManager->getRepository(Voiture::class);
@@ -97,11 +101,52 @@ final class SeedPreviewCommand extends Command
             }
             $voiture->setPrixParJour((float) $row['prixParJour'])->setImage($row['image']);
         }
+        $retired = 0;
+        foreach ($manifest['retired'] ?? [] as $row) {
+            $voiture = $repository->findOneBy(['marque' => $row['marque'], 'modele' => $row['modele']]);
+            if (null === $voiture) {
+                continue;
+            }
+            $bookings = $this->entityManager->getRepository(Reservation::class)->count(['voiture' => $voiture]);
+            if (0 === $bookings) {
+                $this->entityManager->remove($voiture);
+            } else {
+                $voiture->setDisponible(false);
+            }
+            ++$retired;
+        }
         $this->entityManager->flush();
 
-        $io->success(sprintf('Preview fleet ready in %s: %d created, %d updated.', $path, $created, $updated));
+        $io->success(sprintf('Preview fleet ready in %s: %d created, %d updated, %d retired.', $path, $created, $updated, $retired));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Copies photos supplied by the site owner into the uploads directory,
+     * refreshing any copy that differs from the source.
+     *
+     * @param array<string, array<string, string>> $photos
+     */
+    private function copyLocalPhotos(array $photos, SymfonyStyle $io): void
+    {
+        foreach ($photos as $filename => $photo) {
+            if (!isset($photo['localFile'])) {
+                continue;
+            }
+            $source = $this->projectDir.'/'.$photo['localFile'];
+            $target = $this->projectDir.'/public/uploads/voitures/'.$filename;
+            if (!is_file($source)) {
+                $io->warning(sprintf('Missing %s; skipped.', $photo['localFile']));
+                continue;
+            }
+            if (is_file($target) && md5_file($target) === md5_file($source)) {
+                $io->writeln(sprintf(' <comment>skip</comment>  %s (up to date)', $filename));
+                continue;
+            }
+            copy($source, $target);
+            $io->writeln(sprintf(' <info>copied</info> %s', $filename));
+        }
     }
 
     /**

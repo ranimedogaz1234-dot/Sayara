@@ -8,6 +8,14 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     voitures_directory: '%kernel.project_dir%/public/uploads/voitures'
+    # Cars pinned to the front of the homepage "featured" selection, in this
+    # order (matched by brand + model, shown only while available). The rest
+    # of the selection is filled with the priciest other available cars.
+    app.featured_selection:
+        - { marque: 'Rolls-Royce', modele: 'Cullinan — Emerald Green' }
+        - { marque: 'Lamborghini', modele: 'Urus — Grey' }
+        - { marque: 'Lamborghini', modele: 'Urus — Black' }
+        - { marque: 'Rolls-Royce', modele: 'Cullinan — Black & Gold' }
 
 services:
     # default configuration for services in *this* file

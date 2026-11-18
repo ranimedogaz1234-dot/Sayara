@@ -187,34 +187,77 @@
 .cr-reveal.cr-visible { opacity: 1; transform: none; }
 
 /* ---------- Hero ---------- */
-/* Built to the Sayara homepage reference (1920 x 1080): full-bleed showroom
-   photograph, a 1200px content column, bottom-aligned copy and search. */
-.lx-hero { position: relative; min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); isolation: isolate; }
-.lx-hero__media { position: absolute; inset: 0; z-index: -2; }
-.lx-hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; transform: scale(1.03); animation: lx-settle 2.6s var(--ease) forwards; }
-@keyframes lx-settle { to { transform: scale(1); } }
+/* One lit room. The showroom photograph (car and room shot together, shown
+   unaltered) sits right of centre; behind it, an ambient layer made from the
+   same photograph -- extended and heavily blurred -- carries the curtain,
+   walnut wall, ceiling light and copper floor past every edge, so the page
+   background is the room itself rather than a flat black. The photo's edges
+   dissolve into that layer through a soft mask drawn around the car, so
+   the car itself is never faded, blurred or recoloured. */
+.lx-hero {
+  position: relative; display: flex; align-items: flex-end; overflow: hidden; isolation: isolate;
+  min-height: clamp(700px, 100vh, 1000px); min-height: clamp(700px, 100svh, 1000px);
+  background: #0d0c0b;
+}
+.lx-hero__media {
+  position: absolute; z-index: -2; right: -1%; top: calc(var(--nav-h) + 18px);
+  width: 64%; aspect-ratio: 1291 / 860;
+}
+.lx-hero__media::before {
+  content: ''; position: absolute; inset: -100%; z-index: -1;
+  background: var(--hero-ambient) center / 100% 100% no-repeat;
+}
+.lx-hero__media img {
+  display: block; width: 100%; height: 100%;
+  /* soft mask drawn around the car: the car stays fully opaque and sharp,
+     the room around it falls off gradually into the ambient layer */
+  -webkit-mask: var(--hero-mask) center / 100% 100% no-repeat;
+          mask: var(--hero-mask) center / 100% 100% no-repeat;
+  animation: lx-fade-in 1.4s var(--ease) both;
+}
+@keyframes lx-fade-in { from { opacity: 0; } }
 .lx-hero::after {
-  /* only a whisper of shade: keeps the copy legible on narrower screens */
+  /* only where the room meets the page: a light veil under the nav, and the
+     floor settling into the next section below the search bar */
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, rgba(9,9,9,.35) 0%, rgba(9,9,9,0) 45%), linear-gradient(180deg, rgba(9,9,9,.35) 0%, rgba(9,9,9,0) 14%, rgba(9,9,9,0) 86%, rgba(9,9,9,.5) 100%);
+  background: linear-gradient(180deg, rgba(13,12,11,.45) 0%, rgba(13,12,11,0) 12%, rgba(13,12,11,0) 80%, rgba(10,10,9,.6) 93%, var(--ink) 100%);
 }
-.lx-hero__content { width: 100%; padding: 0 0 clamp(56px, 9vh, 96px); }
-.lx-hero__eyebrow { display: block; font: 400 10.5px/1 var(--sans); letter-spacing: .32em; text-transform: uppercase; color: var(--gold); }
-.lx-hero__eyebrow i { font-style: normal; margin: 0 .35em; opacity: .7; }
+.lx-hero__content { width: 100%; padding: calc(var(--nav-h) + 48px) 0 clamp(52px, 8vh, 84px); }
+.lx-hero__copy { max-width: 440px; }
+.lx-hero__eyebrow { display: inline-flex; align-items: center; gap: 14px; font: 400 10px/1 var(--sans); letter-spacing: .34em; text-transform: uppercase; color: var(--gold); }
+.lx-hero__eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold-soft); }
+.lx-hero__eyebrow i { font-style: normal; margin: 0 .2em; opacity: .65; }
 .lx-hero__title {
-  margin: 26px 0 22px; max-width: 640px;
-  font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 3.6vw, 4.3rem); line-height: 1.02; letter-spacing: -.01em; color: #F6F2EA;
+  margin: 24px 0 20px;
+  font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 3vw, 3.35rem); line-height: 1.1; letter-spacing: -.005em; color: #F3EEE5;
+  text-shadow: 0 1px 24px rgba(13,12,11,.35);
 }
-.lx-hero__title em { font-style: italic; color: var(--gold); }
-.lx-hero__lede { max-width: 430px; margin: 0; font: 400 13.5px/1.75 var(--sans); letter-spacing: .03em; color: rgba(244, 240, 232, .62); }
+.lx-hero__title em { font-style: italic; color: var(--gold-hi); }
+.lx-hero__lede { max-width: 360px; margin: 0; font: 400 13px/1.85 var(--sans); letter-spacing: .03em; color: rgba(244, 240, 232, .62); }
 .lx-hero__credit { position: absolute; right: 24px; bottom: 14px; margin: 0; font-size: 9.5px; letter-spacing: .1em; color: rgba(244,240,232,.32); text-align: right; }
 .lx-hero__credit a { color: rgba(244,240,232,.45); }
+.lx-hero .lx-search { margin-top: 52px; max-width: 920px; background: rgba(16, 13, 11, .55); border-color: rgba(216, 188, 134, .14); }
+
+/* Desktop: the room is extended beyond the photograph, in focus -- curtain,
+   cove light, ceiling and floor continued in the photo's own perspective
+   from its own pixels (the photo sits inside, unchanged) -- so the page to
+   the left of the car is the same showroom rather than a soft blur. */
+@media (min-width: 992px) {
+  .lx-hero__media::before { inset: -27.907% 0 -46.512% -63.517%; background: var(--hero-scene) center / 100% 100% no-repeat; }
+  .lx-hero__media img { -webkit-mask: none; mask: none; animation: none; }
+  /* a soft pool of shade behind the copy only, so small type stays legible
+     over the light fabric at the foot of the curtain */
+  .lx-hero__copy { position: relative; }
+  .lx-hero__copy::before { content: ''; position: absolute; inset: -70px -120px -60px -90px; z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(12,11,10,.5), rgba(12,11,10,.28) 55%, rgba(12,11,10,0)); }
+  .lx-hero__eyebrow, .lx-hero__lede { text-shadow: 0 1px 10px rgba(10,9,8,.7); }
+}
 
 /* Search panel (hero + catalog) */
 .lx-search {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
   margin-top: 40px; max-width: 900px;
-  background: rgba(10, 10, 10, .72); border: 1px solid rgba(244, 240, 232, .1);
+  background: rgba(10, 10, 10, .6); border: 1px solid rgba(244, 240, 232, .1); backdrop-filter: blur(8px);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 .lx-search--wide { max-width: none; margin-top: 0; }
@@ -429,7 +472,7 @@
 .lx-specs dd { font-size: 15px; }
 .lx-auth__form .display { font-size: clamp(1.9rem, 2.6vw, 2.4rem); }
 .lx-auth__quote p { font-weight: 400; font-size: clamp(1.25rem, 1.7vw, 1.6rem); }
-.lx-auth__visual img { object-position: 52% 60%; transform: scale(1.35); transform-origin: 45% 62%; filter: none; }
+.lx-auth__visual img { object-position: 62% 55%; transform: none; filter: none; }
 .cr-panel-header, .lx-field label, .luxury-body .form-group > label { font-weight: 400 !important; }
 .lx-footer { border-top-color: rgba(197, 164, 109, .16); }
 .lx-footer h6 { font-weight: 400; }
@@ -458,15 +501,12 @@
   .lx-auth__visual { display: none; }
   .lx-gallery::before { left: -12px; top: 12px; right: 12px; bottom: -12px; }
   .lx-hero__credit { left: 24px; right: auto; text-align: left; }
-  /* Tablet & phone: the showroom photograph becomes a band under the nav,
-     framed on the car, and the copy and search follow below it. */
-  .lx-hero { display: block; min-height: 0; padding-top: calc(var(--nav-h) + 62.5vw - 12px); }
-  .lx-hero__media { inset: auto; top: var(--nav-h); left: 0; right: 0; aspect-ratio: 16 / 10; overflow: hidden;
-    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%); mask-image: linear-gradient(180deg, #000 70%, transparent 100%); }
-  .lx-hero__media img { position: absolute; left: 50%; top: 50%; width: 160%; height: auto; object-fit: fill; transform: translate(-67%, -57%); animation: none; }
-  .lx-hero::after { background: none; }
-  .lx-hero__content { padding-bottom: 64px; }
-  .lx-hero__title { margin: 22px 0 20px; }
+  /* Tablet & phone: the same room, photo first, framed on the car; its
+     edges feather into the ambient layer and the copy follows below. */
+  .lx-hero { display: block; min-height: 0; padding-top: calc(var(--nav-h) + 80vw); }
+  .lx-hero__media { top: calc(var(--nav-h) + 2vw); right: auto; left: -18%; width: 136%; }
+  .lx-hero__content { padding: 0 0 56px; }
+  .lx-hero__title { margin: 20px 0 16px; }
   .lx-hero__credit { position: static; padding: 0 24px 24px; margin: -40px 0 0; }
   .lx-search { grid-template-columns: 1fr 1fr; margin-top: 36px; }
   .lx-search__field { padding: 16px 18px 14px; border-bottom: 1px solid var(--line); }
@@ -478,7 +518,7 @@
   .luxury-body { font-size: 14px; }
   .lx-grid { grid-template-columns: 1fr; gap: 56px; }
   .lx-hero__eyebrow { letter-spacing: .22em; font-size: 10.5px; }
-  .lx-hero__title { font-size: 2.2rem; }
+  .lx-hero__title { font-size: 2rem; }
   .lx-hero__lede { font-size: 13px; }
   .lx-head { margin-bottom: 44px; }
   .lx-cta { padding: 64px 22px; }
